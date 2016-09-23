@@ -17,8 +17,10 @@ class Save extends Action
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
-    /** @var PageCacheConfig $applicationFactory */
+    /** @var PageCache $pageCacheConfig */
     protected $pageCacheConfig;
+    /** @var \Sectionio\Metrics\Helper\Data $helper */
+    protected $helper;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -27,6 +29,7 @@ class Save extends Action
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Sectionio\Metrics\Helper\Data $helper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -34,7 +37,8 @@ class Save extends Action
         \Magento\PageCache\Model\Config $pageCacheConfig,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Sectionio\Metrics\Helper\Data $helper
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
@@ -42,6 +46,7 @@ class Save extends Action
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->helper = $helper;
     }
 
     /**
@@ -108,8 +113,7 @@ class Save extends Action
                     $service_url = sprintf('https://aperture.section.io/api/v1/account/%d/application/%d/environment/%s/proxy/%s/configuration', $account_id, $application_id, $environment_name, $proxy_name);
                     $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
                     $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
-                    $response = $this->performCurl($service_url, $credentials, 'POST', array('content' => $vcl, 'personality' => 'MagentoTurpentine'));
-                    print_r($response);
+                    $this->helper->performCurl($service_url, $credentials, 'POST', array('content' => $vcl, 'personality' => 'MagentoTurpentine'));
 
                 }
                 else {
@@ -218,39 +222,5 @@ class Save extends Action
         foreach ($collection as $model) {
             $model->delete();
         }
-    }
-
-    /**
-     * Perform Sectionio curl call
-     *
-     * @param string $service_url
-     * @param array() $credentials
-     *
-     * @return array() $results
-     */
-    public function performCurl ($service_url, $credentials, $method, $payload) {
-        // setup curl call
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $service_url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_FAILONERROR, false);
-        curl_setopt($ch, CURLOPT_USERPWD, $credentials);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
-        if ($method == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, true);
-            $json = json_encode($payload);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
-        }
-
-        // if response received
-        if ($curl_response = curl_exec($ch)) {
-            return (json_decode ($curl_response, true));
-        }
-        return false;
     }
 }

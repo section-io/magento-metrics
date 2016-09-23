@@ -119,10 +119,12 @@ class Data extends AbstractHelper
      *
      * @param string $service_url
      * @param array() $credentials
+     * @param string $method
+     * @param array() $payload
      *
-     * @return array() $results
+     * @return array() $response
      */
-    public function performCurl ($service_url, $credentials) {
+    public function performCurl ($service_url, $credentials, $method = null, $payload = null) {
         // setup curl call
          $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $service_url);
@@ -135,6 +137,12 @@ class Data extends AbstractHelper
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        if ($method == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+            $json = json_encode($payload);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
+        }
 
         // if response received
         if ($curl_response = curl_exec($ch)) {    
