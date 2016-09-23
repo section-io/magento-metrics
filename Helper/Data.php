@@ -23,20 +23,18 @@ class Data extends AbstractHelper
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory, 
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
-        $this->scopeConfig = $scopeConfig;
+        $this->scopeConfig = $context->getScopeConfig();
     }
 
     /**
