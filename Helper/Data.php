@@ -25,7 +25,6 @@ class Data extends AbstractHelper
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
@@ -33,14 +32,13 @@ class Data extends AbstractHelper
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
-        $this->scopeConfig = $scopeConfig;
+        $this->scopeConfig = $context->getScopeConfig();
         $this->encryptor = $encryptor;
     }
 
