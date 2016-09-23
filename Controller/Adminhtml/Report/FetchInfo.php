@@ -17,6 +17,8 @@ class FetchInfo extends Action
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    protected $encryptor;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -24,19 +26,22 @@ class FetchInfo extends Action
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -53,7 +58,7 @@ class FetchInfo extends Action
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $this->accountFactory->create();
         /** @var string $credentials */
-        $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
+        $credentials = ($settingsFactory->getData('user_name') . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
         /** @var int $general_id */
         $general_id = $settingsFactory->getData('general_id');
         /** @var string $service_url */

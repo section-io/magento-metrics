@@ -17,6 +17,8 @@ class Data extends AbstractHelper
     protected $applicationFactory;
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
     protected $scopeConfig;
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    protected $encryptor;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -24,19 +26,22 @@ class Data extends AbstractHelper
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -52,7 +57,7 @@ class Data extends AbstractHelper
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
         /** @var string $credentials */
-        $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
+        $credentials = ($settingsFactory->getData('user_name') . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
         /** @var string $service_url */
         $initial_url = 'https://www.section.io/magento-section-io-plugin-config.json';
         /** @var array() $response */

@@ -17,6 +17,8 @@ class Save extends Action
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    protected $encryptor;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -24,19 +26,22 @@ class Save extends Action
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -74,11 +79,11 @@ class Save extends Action
         }
         // only update on change
         if ($password = $this->getRequest()->getParam('password')) {
-            if ($password != $settingsFactory->getData('password')) {
+            if ($password != '') {
                 $account_id = NULL;
                 $this->cleanSettings();
 				$update_flag = true;
-                $settingsFactory->setData('password', $password);
+                $settingsFactory->setData('password', $this->encryptor->encrypt($password));
             }
         }
 		// update settings
