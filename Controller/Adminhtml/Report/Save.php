@@ -88,7 +88,7 @@ class Save extends Action
                 $account_id = NULL;
                 $this->cleanSettings();
 				$update_flag = true;
-                $settingsFactory->setData('password', $password);
+                $this->helper->savePassword($settingsFactory, $password);
             }
         }
 		// update settings
