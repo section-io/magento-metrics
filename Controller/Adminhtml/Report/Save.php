@@ -22,6 +22,8 @@ class Save extends Action
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
 
+    protected $logger;
+
     /**
      * @param Magento\Backend\App\Action\Context $context
      * @param Magento\Framework\View\Result\PageFactory $resultPageFactory
@@ -30,6 +32,7 @@ class Save extends Action
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -38,7 +41,8 @@ class Save extends Action
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Sectionio\Metrics\Helper\Data $helper
+        \Sectionio\Metrics\Helper\Data $helper,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
@@ -47,6 +51,7 @@ class Save extends Action
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     /**
