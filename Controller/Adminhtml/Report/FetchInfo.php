@@ -23,7 +23,7 @@ class FetchInfo extends Action
     /**
      * @param Magento\Backend\App\Action\Context $context
      * @param Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
@@ -70,7 +70,7 @@ class FetchInfo extends Action
                 /** @var string $account_name */
                 $account_name = $account['account_name'];
                 /** @var int $account_id */
-                if ($account_id = $this->updateAccount($general_id, $id, $account_name)) {    
+                if ($account_id = $this->updateAccount($general_id, $id, $account_name)) {
                     /** @var string $service_url */
                     $service_url = 'https://aperture.section.io/api/v1/account/' . $id . '/application';
                     // perform application curl call
@@ -85,21 +85,21 @@ class FetchInfo extends Action
                             $this->updateApplication($account_id, $application_id, $application_name);
                         }
                     }
-                }        
+                }
             }
             // successful results
             $this->messageManager
-                ->addSuccess(__('You have successfully updated account and application data.  Please select your default account and application and save the selections.  Once complete, you will be able to view the Section.io site metrics.'));        
-            return $resultRedirect->setPath('metrics/report/index');    
+                ->addSuccess(__('You have successfully updated account and application data.  Please select your default account and application and save the selections.  Once complete, you will be able to view the Section.io site metrics.'));
+            return $resultRedirect->setPath('metrics/report/index');
         }
         // no account data
         else {
             $this->messageManager
-                ->addError(__('No accounts discovered.  Please check your credentials and try again.'));        
-            return $resultRedirect->setPath('metrics/report/index');    
+                ->addError(__('No accounts discovered.  Please check your credentials and try again.'));
+            return $resultRedirect->setPath('metrics/report/index');
         }
     }
-    
+
     /**
      * Process account result
      *
@@ -132,14 +132,14 @@ class FetchInfo extends Action
             $model->setData('account_name', $account_name);
             $model->setData('is_active', '0');
             // save account
-            $model->save();    
+            $model->save();
             // return unique id
             return ($model->getData('id'));
         }
         // no results
         return false;
     }
-    
+
     /**
      * Process application result
      *
@@ -164,7 +164,7 @@ class FetchInfo extends Action
                 break;
             }
         }
-        // new application discovered		
+        // new application discovered
         if ($flag) {
             // set data
             $model->setData('account_id', $account_id);
@@ -172,7 +172,7 @@ class FetchInfo extends Action
             $model->setData('application_name', $application_name);
             $model->setData('is_active', '0');
             // save application
-            $model->save();    
+            $model->save();
         }
     }
 }
