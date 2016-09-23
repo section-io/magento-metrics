@@ -139,6 +139,7 @@ class Data extends AbstractHelper
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
+            /** @var string $json */
             $json = json_encode($payload);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));

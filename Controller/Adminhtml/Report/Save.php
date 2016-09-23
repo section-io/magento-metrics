@@ -108,11 +108,17 @@ class Save extends Action
                     // set default application
                     $this->setDefaultApplication($application_id);
 
+                    /** @var string $environment_name */
                     $environment_name = 'Development';
+                    /** @var string $proxy_name */
                     $proxy_name = 'varnish';
+                    /** @var string $service_url */
                     $service_url = sprintf('https://aperture.section.io/api/v1/account/%d/application/%d/environment/%s/proxy/%s/configuration', $account_id, $application_id, $environment_name, $proxy_name);
+                    /** @var string $credentials */
                     $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
+                    /** Extract the generated Varnish 4 VCL code */
                     $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+                    /** POST VCL to the varnish proxy **/
                     $this->helper->performCurl($service_url, $credentials, 'POST', array('content' => $vcl, 'personality' => 'MagentoTurpentine'));
 
                 }
