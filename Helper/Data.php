@@ -17,42 +17,47 @@ class Data extends AbstractHelper
     protected $applicationFactory;
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
     protected $scopeConfig;
-    
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    protected $encryptor;
+
     /**
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Sectionio\Metrics\Model\SettingsFactory $settingsFactory, 
+        \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->encryptor = $encryptor;
     }
 
     /**
-     * Retrieves the section.io site metrics 
+     * Retrieves the section.io site metrics
      *
      * @param int $account_id
      * @param int $application_id
-     * 
+     *
      * @return array()
-     */    
-    public function getMetrics($account_id, $application_id) {    
-    
+     */
+    public function getMetrics($account_id, $application_id) {
+
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
         /** @var string $credentials */
-        $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
+        $credentials = ($settingsFactory->getData('user_name') . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
         /** @var string $service_url */
         $initial_url = 'https://www.section.io/magento-section-io-plugin-config.json';
         /** @var array() $response */
@@ -72,7 +77,7 @@ class Data extends AbstractHelper
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
         // if response received
-        if ($curl_response = curl_exec($ch)) {    
+        if ($curl_response = curl_exec($ch)) {
             if ($data = json_decode ($curl_response, true)) {
                 // loop through return data
                 foreach ($data as $key => $charts) {
@@ -97,7 +102,7 @@ class Data extends AbstractHelper
 		                            if (isset ($chart['apertureLink'])) {
 		                                $response[$count]['apertureLink'] = $chart['apertureLink'];
 		                            }
-                                    // increment count 
+                                    // increment count
                                     $count ++;
                                 }
                             }
@@ -113,7 +118,7 @@ class Data extends AbstractHelper
         }
         return $response;
     }
-    
+
     /**
      * Perform Sectionio curl call
      *
@@ -137,10 +142,10 @@ class Data extends AbstractHelper
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
         // if response received
-        if ($curl_response = curl_exec($ch)) {    
+        if ($curl_response = curl_exec($ch)) {
             return $curl_response;
         }
-        return false;     
+        return false;
     }
-    
+
 }

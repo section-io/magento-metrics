@@ -14,12 +14,12 @@ class Credentials extends Generic implements TabInterface
     protected $settingsFactory;
     /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
     protected $accountFactory;
-    
+
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param array $data
      */
@@ -70,11 +70,11 @@ class Credentials extends Generic implements TabInterface
 
         $placeholder = $fieldset->addField('label', 'hidden', array(
             'value' => __('section.io Account Credentials'),
-        )); 
-		
+        ));
+
         /** @var string $ectionio_url */
         $sectionio_url = 'https://aperture.section.io/';
-        
+
         // credentials provided
         if ($general_id = $settingsFactory->getData('general_id')) {
             // change section.io link to use default account
@@ -86,8 +86,8 @@ class Credentials extends Generic implements TabInterface
                     <div class="message message-notice">
                         Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
                     </div>
-                </div>        
-            ');            
+                </div>
+            ');
         }
         // no credential provided
         else {
@@ -96,48 +96,48 @@ class Credentials extends Generic implements TabInterface
                     <div class="message message-notice">
                         Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
                     </div>
-                </div>        
-            ');                
+                </div>
+            ');
         }
-        
+
         // general_id field (hidden)
         $fieldset->addField(
             'general_id',
             'hidden',
             [
-                'name' => 'general_id', 
+                'name' => 'general_id',
                 'value' => $settingsFactory->getData('general_id')
             ]
         );
-		
+
         // user_name field
         $fieldset->addField(
             'user_name',
             'text',
             [
-                'name' => 'user_name', 
-                'label' => __('User Name'), 
+                'name' => 'user_name',
+                'label' => __('User Name'),
                 'title' => __('User Name'),
                 'style' => 'width:75%',
                 'required' => true,
                 'value' => $settingsFactory->getData('user_name')
             ]
-        );			
-    
+        );
+
         // password field
         $password = $fieldset->addField(
             'password',
             'password',
             [
-                'name' => 'password', 
-                'label' => __('Password'), 
+                'name' => 'password',
+                'label' => __('Password'),
                 'title' => __('Password'),
                 'style' => 'width:75%',
-                'required' => true,
-                'value' => $settingsFactory->getData('password')
+                'required' => ('' == $settingsFactory->getData('password') ? true : false),
+                'value' => ''
             ]
         );
-		
+
         // button to fetch info field
         $fieldset->addField(
             'save_info',
@@ -151,9 +151,9 @@ class Credentials extends Generic implements TabInterface
 
         $this->setForm($form);
 
-        return parent::_prepareForm();        
+        return parent::_prepareForm();
     }
-    
+
     /**
      * Prepare label for tab
      *
@@ -163,7 +163,7 @@ class Credentials extends Generic implements TabInterface
     {
         return __('section.io Account Credentials');
     }
- 
+
     /**
      * Prepare title for tab
      *
@@ -173,7 +173,7 @@ class Credentials extends Generic implements TabInterface
     {
         return __('section.io Account Credentials');
     }
- 
+
     /**
      * {@inheritdoc}
      */
@@ -181,7 +181,7 @@ class Credentials extends Generic implements TabInterface
     {
         return true;
     }
- 
+
     /**
      * {@inheritdoc}
      */
@@ -189,7 +189,7 @@ class Credentials extends Generic implements TabInterface
     {
         return false;
     }
-    
+
     /**
      * Get active account
      *
@@ -210,5 +210,5 @@ class Credentials extends Generic implements TabInterface
         }
         return false;
     }
-    
+
 }

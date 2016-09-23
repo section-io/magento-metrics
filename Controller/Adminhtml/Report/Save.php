@@ -17,26 +17,31 @@ class Save extends Action
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    protected $encryptor;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
      * @param Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -74,11 +79,11 @@ class Save extends Action
         }
         // only update on change
         if ($password = $this->getRequest()->getParam('password')) {
-            if ($password != $settingsFactory->getData('password')) {
+            if ($password != '') {
                 $account_id = NULL;
                 $this->cleanSettings();
 				$update_flag = true;
-                $settingsFactory->setData('password', $password);
+                $settingsFactory->setData('password', $this->encryptor->encrypt($password));
             }
         }
 		// update settings
@@ -89,14 +94,14 @@ class Save extends Action
 			return $resultRedirect->setPath('metrics/report/fetchInfo');
 		}
 		else {
-            // if $account_id    
+            // if $account_id
             if ($account_id) {
                 // set default account
                 $this->setDefaultAccount($account_id);
                 // if exists
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
-                    $this->setDefaultApplication($application_id);		
+                    $this->setDefaultApplication($application_id);
                 }
                 else {
                     // clear default application
@@ -109,11 +114,11 @@ class Save extends Action
                 $this->clearDefaultApplication();
             }
             $this->messageManager
-                ->addSuccess(__('You have successfully updated the account information.'));        
+                ->addSuccess(__('You have successfully updated the account information.'));
             return $resultRedirect->setPath('metrics/report/index');
         }
     }
-    
+
     /**
      * Set active account
      *
@@ -127,14 +132,14 @@ class Save extends Action
         $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if (! $accountFactory->getData('is_active')) {
             $this->clearDefaultAccount();
             $accountFactory->setData('is_active', '1');
             $accountFactory->save();
         }
     }
-    
+
     /**
      * Clear default account
      *
@@ -146,13 +151,13 @@ class Save extends Action
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if ($accountFactory->getData('id')) {
             $accountFactory->setData('is_active', '0');
             $accountFactory->save();
         }
     }
-    
+
     /**
      * Set active application
      *
@@ -166,14 +171,14 @@ class Save extends Action
         $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
         $applicationFactory = $collection->getFirstItem();
-        
+
         if (! $applicationFactory->getData('is_active')) {
             $this->clearDefaultApplication();
             $applicationFactory->setData('is_active', '1');
             $applicationFactory->save();
         }
     }
-    
+
     /**
      * Clear default application
      *
@@ -185,13 +190,13 @@ class Save extends Action
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
         $applicationFactory = $collection->getFirstItem();
-        
+
         if ($applicationFactory->getData('id')) {
             $applicationFactory->setData('is_active', '0');
             $applicationFactory->save();
         }
     }
-    
+
     /**
      * Clean current accounts (new credentials detected)
      *
@@ -202,7 +207,7 @@ class Save extends Action
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
         foreach ($collection as $model) {
-            $model->delete();    
+            $model->delete();
         }
-    }    
+    }
 }
