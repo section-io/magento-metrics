@@ -94,14 +94,14 @@ class Save extends Action
 			return $resultRedirect->setPath('metrics/report/fetchInfo');
 		}
 		else {
-            // if $account_id    
+            // if $account_id
             if ($account_id) {
                 // set default account
                 $this->setDefaultAccount($account_id);
                 // if exists
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
-                    $this->setDefaultApplication($application_id);		
+                    $this->setDefaultApplication($application_id);
 
                     $environment_name = 'Development';
                     $proxy_name = 'varnish';
@@ -123,11 +123,11 @@ class Save extends Action
                 $this->clearDefaultApplication();
             }
             $this->messageManager
-                ->addSuccess(__('You have successfully updated the account information.'));        
+                ->addSuccess(__('You have successfully updated the account information.'));
             return $resultRedirect->setPath('metrics/report/index');
         }
     }
-    
+
     /**
      * Set active account
      *
@@ -141,14 +141,14 @@ class Save extends Action
         $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if (! $accountFactory->getData('is_active')) {
             $this->clearDefaultAccount();
             $accountFactory->setData('is_active', '1');
             $accountFactory->save();
         }
     }
-    
+
     /**
      * Clear default account
      *
@@ -160,13 +160,13 @@ class Save extends Action
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if ($accountFactory->getData('id')) {
             $accountFactory->setData('is_active', '0');
             $accountFactory->save();
         }
     }
-    
+
     /**
      * Set active application
      *
@@ -180,14 +180,14 @@ class Save extends Action
         $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
         $applicationFactory = $collection->getFirstItem();
-        
+
         if (! $applicationFactory->getData('is_active')) {
             $this->clearDefaultApplication();
             $applicationFactory->setData('is_active', '1');
             $applicationFactory->save();
         }
     }
-    
+
     /**
      * Clear default application
      *
@@ -199,13 +199,13 @@ class Save extends Action
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
         $applicationFactory = $collection->getFirstItem();
-        
+
         if ($applicationFactory->getData('id')) {
             $applicationFactory->setData('is_active', '0');
             $applicationFactory->save();
         }
     }
-    
+
     /**
      * Clean current accounts (new credentials detected)
      *
@@ -216,9 +216,9 @@ class Save extends Action
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
         foreach ($collection as $model) {
-            $model->delete();    
+            $model->delete();
         }
-    }    
+    }
 
     /**
      * Perform Sectionio curl call
