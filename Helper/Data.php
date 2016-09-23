@@ -17,42 +17,43 @@ class Data extends AbstractHelper
     protected $applicationFactory;
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
     protected $scopeConfig;
-    
+     /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    protected $encryptor;
+
     /**
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Sectionio\Metrics\Model\SettingsFactory $settingsFactory, 
+        \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->encryptor = $encryptor;
     }
 
     /**
-     * Retrieves the section.io site metrics 
+     * Retrieves the section.io site metrics
      *
      * @param int $account_id
      * @param int $application_id
-     * 
+     *
      * @return array()
-     */    
-    public function getMetrics($account_id, $application_id) {    
-    
-        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
-        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
-        /** @var string $credentials */
-        $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
+     */
+    public function getMetrics($account_id, $application_id) {
+
         /** @var string $service_url */
         $initial_url = 'https://www.section.io/magento-section-io-plugin-config.json';
         /** @var array() $response */
@@ -72,7 +73,7 @@ class Data extends AbstractHelper
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
         // if response received
-        if ($curl_response = curl_exec($ch)) {    
+        if ($curl_response = curl_exec($ch)) {
             if ($data = json_decode ($curl_response, true)) {
                 // loop through return data
                 foreach ($data as $key => $charts) {
@@ -88,7 +89,7 @@ class Data extends AbstractHelper
                                 // append time zone
                                 $service_url .= '&tz=' . $this->scopeConfig->getValue('general/locale/timezone', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                                 /** @var object $image */
-                                if ($image = $this->performCurl($service_url, $credentials)) {
+                                if ($image = $this->performCurl($service_url)) {
                                     // build return array
                                     $response[$count]['title'] = $chart['title'];
                                     $response[$count]['chart'] = base64_encode ($image);
@@ -97,7 +98,7 @@ class Data extends AbstractHelper
 		                            if (isset ($chart['apertureLink'])) {
 		                                $response[$count]['apertureLink'] = $chart['apertureLink'];
 		                            }
-                                    // increment count 
+                                    // increment count
                                     $count ++;
                                 }
                             }
@@ -113,16 +114,34 @@ class Data extends AbstractHelper
         }
         return $response;
     }
-    
+
+    /**
+     * Save the user's password encrypted in the database
+     *
+     * @param string $password
+     *
+     */
+    public function savePassword ($settingsFactory, $password) {
+        $settingsFactory->setData('password', $this->encryptor->encrypt($password));
+    }
+
     /**
      * Perform Sectionio curl call
      *
      * @param string $service_url
      * @param array() $credentials
+     * @param string $method
+     * @param array() $payload
      *
-     * @return array() $results
+     * @return array() $response
      */
-    public function performCurl ($service_url, $credentials) {
+    public function performCurl ($service_url, $method = 'GET', $payload = null) {
+
+        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
+        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
+        /** @var string $credentials */
+        $credentials = ($settingsFactory->getData('user_name') . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
+
         // setup curl call
          $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $service_url);
@@ -135,12 +154,19 @@ class Data extends AbstractHelper
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        if ($method == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+            /** @var string $json */
+            $json = json_encode($payload);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
+        }
 
         // if response received
-        if ($curl_response = curl_exec($ch)) {    
+        if ($curl_response = curl_exec($ch)) {
             return $curl_response;
         }
-        return false;     
+        return false;
     }
-    
+
 }

@@ -17,26 +17,41 @@ class Save extends Action
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    /** @var PageCache $pageCacheConfig */
+    protected $pageCacheConfig;
+    /** @var \Sectionio\Metrics\Helper\Data $helper */
+    protected $helper;
+
+    protected $logger;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
      * @param Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Magento\PageCache\Model\Config $pageCacheConfig
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\PageCache\Model\Config $pageCacheConfig,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Sectionio\Metrics\Helper\Data $helper,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
+        $this->pageCacheConfig = $pageCacheConfig;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     /**
@@ -74,11 +89,11 @@ class Save extends Action
         }
         // only update on change
         if ($password = $this->getRequest()->getParam('password')) {
-            if ($password != $settingsFactory->getData('password')) {
+            if ($password != '') {
                 $account_id = NULL;
                 $this->cleanSettings();
 				$update_flag = true;
-                $settingsFactory->setData('password', $password);
+                $this->helper->savePassword($settingsFactory, $password);
             }
         }
 		// update settings
@@ -89,14 +104,26 @@ class Save extends Action
 			return $resultRedirect->setPath('metrics/report/fetchInfo');
 		}
 		else {
-            // if $account_id    
+            // if $account_id
             if ($account_id) {
                 // set default account
                 $this->setDefaultAccount($account_id);
                 // if exists
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
-                    $this->setDefaultApplication($application_id);		
+                    $this->setDefaultApplication($application_id);
+
+                    /** @var string $environment_name */
+                    $environment_name = 'Development';
+                    /** @var string $proxy_name */
+                    $proxy_name = 'varnish';
+                    /** @var string $service_url */
+                    $service_url = sprintf('https://aperture.section.io/api/v1/account/%d/application/%d/environment/%s/proxy/%s/configuration', $account_id, $application_id, $environment_name, $proxy_name);
+                    /** Extract the generated Varnish 4 VCL code */
+                    $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+                    /** POST VCL to the varnish proxy **/
+                    $this->helper->performCurl($service_url, 'POST', array('content' => $vcl, 'personality' => 'MagentoTurpentine'));
+
                 }
                 else {
                     // clear default application
@@ -109,11 +136,11 @@ class Save extends Action
                 $this->clearDefaultApplication();
             }
             $this->messageManager
-                ->addSuccess(__('You have successfully updated the account information.'));        
+                ->addSuccess(__('You have successfully updated the account information.'));
             return $resultRedirect->setPath('metrics/report/index');
         }
     }
-    
+
     /**
      * Set active account
      *
@@ -127,14 +154,14 @@ class Save extends Action
         $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if (! $accountFactory->getData('is_active')) {
             $this->clearDefaultAccount();
             $accountFactory->setData('is_active', '1');
             $accountFactory->save();
         }
     }
-    
+
     /**
      * Clear default account
      *
@@ -146,13 +173,13 @@ class Save extends Action
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if ($accountFactory->getData('id')) {
             $accountFactory->setData('is_active', '0');
             $accountFactory->save();
         }
     }
-    
+
     /**
      * Set active application
      *
@@ -166,14 +193,14 @@ class Save extends Action
         $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
         $applicationFactory = $collection->getFirstItem();
-        
+
         if (! $applicationFactory->getData('is_active')) {
             $this->clearDefaultApplication();
             $applicationFactory->setData('is_active', '1');
             $applicationFactory->save();
         }
     }
-    
+
     /**
      * Clear default application
      *
@@ -185,13 +212,13 @@ class Save extends Action
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
         $applicationFactory = $collection->getFirstItem();
-        
+
         if ($applicationFactory->getData('id')) {
             $applicationFactory->setData('is_active', '0');
             $applicationFactory->save();
         }
     }
-    
+
     /**
      * Clean current accounts (new credentials detected)
      *
@@ -202,7 +229,7 @@ class Save extends Action
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
         foreach ($collection as $model) {
-            $model->delete();    
+            $model->delete();
         }
-    }    
+    }
 }
