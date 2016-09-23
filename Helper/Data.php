@@ -49,10 +49,6 @@ class Data extends AbstractHelper
      */
     public function getMetrics($account_id, $application_id) {
 
-        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
-        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
-        /** @var string $credentials */
-        $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
         /** @var string $service_url */
         $initial_url = 'https://www.section.io/magento-section-io-plugin-config.json';
         /** @var array() $response */
@@ -88,7 +84,7 @@ class Data extends AbstractHelper
                                 // append time zone
                                 $service_url .= '&tz=' . $this->scopeConfig->getValue('general/locale/timezone', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                                 /** @var object $image */
-                                if ($image = $this->performCurl($service_url, $credentials)) {
+                                if ($image = $this->performCurl($service_url)) {
                                     // build return array
                                     $response[$count]['title'] = $chart['title'];
                                     $response[$count]['chart'] = base64_encode ($image);
@@ -124,7 +120,13 @@ class Data extends AbstractHelper
      *
      * @return array() $response
      */
-    public function performCurl ($service_url, $credentials, $method = null, $payload = null) {
+    public function performCurl ($service_url, $method = 'GET', $payload = null) {
+
+        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
+        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
+        /** @var string $credentials */
+        $credentials = ($settingsFactory->getData('user_name') . ':' . $settingsFactory->getData('password'));
+
         // setup curl call
          $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $service_url);
