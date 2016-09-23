@@ -133,8 +133,8 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('Password'),
                 'title' => __('Password'),
                 'style' => 'width:75%',
-                'required' => true,
-                'value' => $settingsFactory->getData('password')
+                'required' =>  ('' == $settingsFactory->getData('password') ? true : false),
+                'value' => ''
             ]
         );
 

@@ -84,7 +84,7 @@ class Save extends Action
         }
         // only update on change
         if ($password = $this->getRequest()->getParam('password')) {
-            if ($password != $settingsFactory->getData('password')) {
+            if ($password != '') {
                 $account_id = NULL;
                 $this->cleanSettings();
 				$update_flag = true;
