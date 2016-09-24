@@ -165,7 +165,7 @@ class Data extends AbstractHelper
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
         }
 
-        // if response received
+        // construct the response object from the curl info and the body response
         $curl_response = curl_exec($ch);
         $curl_info = curl_getinfo($ch);
         $curl_info['body_content'] = $curl_response;
