@@ -121,8 +121,8 @@ class Settings extends Generic implements TabInterface
                 'select',
                 [
                     'name' => 'account_id',
-                    'label' => __('Default Account'),
-                    'title' => __('Default Account'),
+                    'label' => __('Account'),
+                    'title' => __('Account'),
                     'style' => 'width:75%',
                     'value' => $defaultAccount,
                     'required' => true,
@@ -152,8 +152,8 @@ class Settings extends Generic implements TabInterface
                     'select',
                     [
                         'name' => ('application_id' . $key),
-                        'label' => __('Default Application'),
-                        'title' => __('Default Application'),
+                        'label' => __('Application'),
+                        'title' => __('Application'),
                         'style' => 'width:75%',
                         'value' => $defaultApplication,
                         'required' => true,
