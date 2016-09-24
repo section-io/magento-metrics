@@ -79,7 +79,6 @@ class FetchInfo extends Action
         if ($curl_response['http_code'] == 200) {
             $accountData = json_decode($curl_response['body_content'], true);
 
-
             if (!$accountData) {
                 $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
                 $origin = json_decode($this->helper->performCurl('https://aperture.section.io/api/v1/origin?hostName=' . $hostname)['body_content'], true);
@@ -94,6 +93,11 @@ class FetchInfo extends Action
                     return $resultRedirect->setPath('metrics/report/index');
                 }
                 $accountData[] = $account_content;
+
+                $this->logger->info('Retrieving certificate started for ' . $hostname);
+                $certificate_url = 'https://aperture.section.io/api/v1/account/' . $account_content['id'] . '/domain/' . $hostname . '/renewCertificate';
+                $certificate_response = $this->helper->performCurl($certificate_url, 'POST', array());
+                $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 
             // loop through accounts discovered
