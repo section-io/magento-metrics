@@ -71,22 +71,32 @@ class FetchInfo extends Action
         /** @var int $general_id */
         $general_id = $settingsFactory->getData('general_id');
         /** @var string $service_url */
-        $service_url = 'https://aperture.section.io/api/v1/account';
+        $service_url = $this->helper->generateApertureUrl(array('uriStem' => '/account'));
         // remove the existing accounts
         $this->cleanSettings();
         // perform account curl call
         $curl_response = $this->helper->performCurl($service_url);
+        $this->logger->debug(print_r($service_url, true));
         if ($curl_response['http_code'] == 200) {
             $accountData = json_decode($curl_response['body_content'], true);
 
 
             if (!$accountData) {
+                /** @var string $hostname */
                 $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
-                $origin = json_decode($this->helper->performCurl('https://aperture.section.io/api/v1/origin?hostName=' . $hostname)['body_content'], true);
+                /** @var string $service_url */
+                $service_url = $this->helper->generateApertureUrl(array('uriStem' => '/origin?hostName=' . $hostname));
+                /** @var array $origin */
+                $origin = json_decode($this->helper->performCurl($service_url)['body_content'], true);
+                /** @var string $origin_address */
                 $origin_address = $origin['origin_detected'] ? $origin['origin'] : '192.168.35.10';
-
+                /** @var array $payload */
                 $payload = array('name' => $hostname, 'hostname' => $hostname, 'origin' => $origin_address, 'stackName' => 'varnish');
-                $account_response = $this->helper->performCurl('https://aperture.section.io/api/v1/account/create', 'POST', $payload);
+                /** @var string $service_url */
+                $service_url = $this->helper->generateApertureUrl(array('uriStem' => '/account/create'));
+                /** @var array $account_response */
+                $account_response = $this->helper->performCurl($service_url, 'POST', $payload);
+                /** @var string $account_content */
                 $account_content = json_decode($account_response['body_content'], true);
                 if ($account_response['http_code'] != 200) {
                     $this->messageManager
@@ -105,7 +115,7 @@ class FetchInfo extends Action
                 /** @var int $account_id */
                 if ($account_id = $this->updateAccount($general_id, $id, $account_name)) {
                     /** @var string $service_url */
-                    $service_url = 'https://aperture.section.io/api/v1/account/' . $id . '/application';
+                    $service_url = $this->helper->generateApertureUrl(array('accountId' => $id, 'uriStem' => '/application'));
                     // perform application curl call
                     if ($applicationData = json_decode($this->helper->performCurl($service_url)['body_content'], true)) {
                         // loop through available applications

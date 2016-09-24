@@ -129,6 +129,39 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Generate an aperture API URL
+     *
+     * @param array $parameters
+     *
+     */
+    public function generateApertureUrl ($parameters) {
+        $url = 'https://aperture.section.io/api/v1';
+        if (isset($parameters['accountId'])) {
+            $url .= '/account/' . $parameters['accountId'];
+        }
+
+        if (isset($parameters['applicationId'])) {
+            $url .= '/application/' . $parameters['applicationId'];
+        }
+
+        if (isset($parameters['environmentName'])) {
+            $url .= '/environment/' . $parameters['environmentName'];
+        }
+
+        if (isset($parameters['proxyName'])) {
+            $url .= '/proxy/' . $parameters['proxyName'];
+        }
+
+        if (isset($parameters['uriStem'])) {
+            $url .= $parameters['uriStem'];
+        }
+        $this->logger->debug($url);
+        return $url;
+
+
+    }
+
+    /**
      * Perform Sectionio curl call
      *
      * @param string $service_url
