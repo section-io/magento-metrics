@@ -11,6 +11,8 @@ class FetchInfo extends Action
 {
     /** @var PageFactory */
     protected $resultPageFactory;
+    /** @var StoreManagerInterface */
+    protected $storeManager;
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
     protected $settingsFactory;
     /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -22,10 +24,10 @@ class FetchInfo extends Action
     /** @var \Psr\Log\LoggerInterface $logger */
     protected $logger;
 
-
     /**
      * @param Magento\Backend\App\Action\Context $context
      * @param Magento\Framework\View\Result\PageFactory $resultPageFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
@@ -35,14 +37,17 @@ class FetchInfo extends Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
         \Psr\Log\LoggerInterface $logger
     ) {
+
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
+        $this->storeManager = $storeManager;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
@@ -67,8 +72,30 @@ class FetchInfo extends Action
         $general_id = $settingsFactory->getData('general_id');
         /** @var string $service_url */
         $service_url = 'https://aperture.section.io/api/v1/account';
+        // remove the existing accounts
+        $this->cleanSettings();
         // perform account curl call
-        if ($accountData = json_decode($this->helper->performCurl($service_url), true)) {
+        $curl_response = $this->helper->performCurl($service_url);
+        if ($curl_response['http_code'] == 200) {
+            $accountData = json_decode($curl_response['body_content'], true);
+
+
+            if (!$accountData) {
+                $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
+                $origin = json_decode($this->helper->performCurl('https://aperture.section.io/api/v1/origin?hostName=' . $hostname)['body_content'], true);
+                $origin_address = $origin['origin_detected'] ? $origin['origin'] : '192.168.35.10';
+
+                $payload = array('name' => $hostname, 'hostname' => $hostname, 'origin' => $origin_address, 'stackName' => 'varnish');
+                $account_response = $this->helper->performCurl('https://aperture.section.io/api/v1/account/create', 'POST', $payload);
+                $account_content = json_decode($account_response['body_content'], true);
+                if ($account_response['http_code'] != 200) {
+                    $this->messageManager
+                        ->addError(__($account_content['message']));
+                    return $resultRedirect->setPath('metrics/report/index');
+                }
+                $accountData[] = $account_content;
+            }
+
             // loop through accounts discovered
             foreach ($accountData as $account) {
                 /** @var int $id */
@@ -179,6 +206,20 @@ class FetchInfo extends Action
             $model->setData('is_active', '0');
             // save application
             $model->save();
+        }
+    }
+
+    /**
+     * Clean current accounts
+     *
+     * @return void
+     */
+    public function cleanSettings() {
+        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        $collection = $this->accountFactory->create()->getCollection();
+        // delete all existing accounts
+        foreach ($collection as $model) {
+            $model->delete();
         }
     }
 }
