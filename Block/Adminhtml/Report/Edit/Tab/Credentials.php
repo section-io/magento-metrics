@@ -191,7 +191,7 @@ class Credentials extends Generic implements TabInterface
      * @return string
      */
     public function getActiveAccountByGeneralId($general_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
         $collection->addFieldToFilter('is_active', ['eq' => '1']);

@@ -149,7 +149,7 @@ class Save extends Action
      * @return void
      */
     public function setDefaultAccount($account_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -168,7 +168,7 @@ class Save extends Action
      * @return void
      */
     public function clearDefaultAccount() {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -188,7 +188,7 @@ class Save extends Action
      * @return void
      */
     public function setDefaultApplication($application_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $this->applicationFactory->create()->getCollection();
         $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
@@ -207,7 +207,7 @@ class Save extends Action
      * @return void
      */
     public function clearDefaultApplication() {
-        /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $this->applicationFactory->create()->getCollection();
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
@@ -225,7 +225,7 @@ class Save extends Action
      * @return void
      */
     public function cleanSettings() {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
         foreach ($collection as $model) {

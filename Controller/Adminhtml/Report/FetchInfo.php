@@ -159,7 +159,7 @@ class FetchInfo extends Action
     public function updateAccount ($general_id, $id, $account_name) {
         /** @var \Sectionio\Metrics\Model\AccountFactory $model */
         $model = $this->accountFactory->create();
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $model->getCollection();
         /** @var boolean $flag */
         $flag = true;
@@ -199,7 +199,7 @@ class FetchInfo extends Action
     public function updateApplication ($account_id, $id, $application_name) {
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $model */
         $model = $this->applicationFactory->create();
-        /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $model->getCollection();
         /** @var boolean $flag */
         $flag = true;
@@ -229,7 +229,7 @@ class FetchInfo extends Action
      * @return void
      */
     public function cleanSettings() {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
         foreach ($collection as $model) {
