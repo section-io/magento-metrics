@@ -84,7 +84,9 @@ class FetchInfo extends Action
                 /** @var string $hostname */
                 $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
                 /** @var string $service_url */
-                $service_url = $this->helper->generateApertureUrl(['uriStem' => '/origin?hostName=' . $hostname]);
+                $service_url = $this->helper->generateApertureUrl([
+                    'uriStem' => '/origin?hostName=' . $hostname
+                ]);
                 /** @var array $origin */
                 $origin = json_decode($this->helper->performCurl($service_url)['body_content'], true);
                 /** @var string $origin_address */
@@ -105,8 +107,12 @@ class FetchInfo extends Action
                 $accountData[] = $account_content;
 
                 $this->logger->info('Retrieving certificate started for ' . $hostname);
-                $certificate_url = 'https://aperture.section.io/api/v1/account/' . $account_content['id'] . '/domain/' . $hostname . '/renewCertificate';
-                $certificate_response = $this->helper->performCurl($certificate_url, 'POST', []);
+                $service_url = $this->helper->generateApertureUrl([
+                    'accountId' => $account_content['id'],
+                    'domain'    => $hostname,
+                    'uriStem'   => '/renewCertificate'
+                ]);
+                $certificate_response = $this->helper->performCurl($service_url, 'POST', []);
                 $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 

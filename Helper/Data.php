@@ -19,8 +19,6 @@ class Data extends AbstractHelper
     protected $scopeConfig;
      /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
     protected $encryptor;
-    /** @var \Psr\Log\LoggerInterface $logger */
-    protected $logger;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -28,15 +26,13 @@ class Data extends AbstractHelper
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
-        \Psr\Log\LoggerInterface $logger
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
@@ -44,7 +40,6 @@ class Data extends AbstractHelper
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $context->getScopeConfig();
         $this->encryptor = $encryptor;
-        $this->logger = $logger;
     }
 
     /**
@@ -150,6 +145,10 @@ class Data extends AbstractHelper
 
         if (isset($parameters['proxyName'])) {
             $url .= '/proxy/' . $parameters['proxyName'];
+        }
+
+        if (isset($parameters['domain'])) {
+            $url .= '/domain/' . $parameters['domain'];
         }
 
         if (isset($parameters['uriStem'])) {
