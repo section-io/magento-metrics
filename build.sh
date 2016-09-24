@@ -3,8 +3,8 @@
 pushd /workspace >>/dev/null
 
 rm --force "sectionio-magento-metrics-${EXTENSION_VERSION}.zip"
-zip -r "sectionio-magento-metrics-${EXTENSION_VERSION}.zip" . -x '.git/*'
+zip -r "sectionio-magento-metrics-${EXTENSION_VERSION}.zip" . -x '.git/*' -x 'Dockerfile' -x 'build.sh'
 
 popd >>/dev/null
 
-php /phpcs.phar --standard=MEQP2 /workspace
+#php /phpcs.phar --standard=MEQP2 /workspace
