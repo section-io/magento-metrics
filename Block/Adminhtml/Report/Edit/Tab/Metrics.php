@@ -90,9 +90,9 @@ class Metrics extends Generic implements TabInterface
                     'edit_form_fieldset_intro',
                     []
                 );
-                $placeholder = $intro->addField('label', 'hidden', array(
+                $placeholder = $intro->addField('label', 'hidden', [
                     'value' => __('section.io Metrics'),
-                ));
+                ]);
                $placeholder->setBeforeElementHtml('
                     <div>
                         <div>' . $data['intro'] . '</div>
@@ -110,9 +110,9 @@ class Metrics extends Generic implements TabInterface
                     ['legend' => __($chart['title'])]
                 );
                 // render metric
-                $field[$count] = $chartFieldset[$count]->addField('sample_' . $count, 'hidden', array(
+                $field[$count] = $chartFieldset[$count]->addField('sample_' . $count, 'hidden', [
                     'value' => __($chart['title']),
-                ));
+                ]);
                 if (isset ($chart['apertureLink'])) {
                     $field[$count]->setAfterElementHtml('
                         <div>' . $chart['help'] . '<a href="' . $chart['docs'] . '" style="color: #FF0000" target="_blank">   Read more.</a></div><br>
@@ -145,9 +145,9 @@ class Metrics extends Generic implements TabInterface
                 ['legend' => __('section.io Site Metrics')]
             );
 
-            $message = $fieldset->addField('label', 'hidden', array(
+            $message = $fieldset->addField('label', 'hidden', [
                 'value' => __('section.io Account Credentials'),
-            ));
+            ]);
 
             $message->setBeforeElementHtml('
                 <div class="messages">

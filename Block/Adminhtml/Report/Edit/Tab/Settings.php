@@ -77,9 +77,9 @@ class Settings extends Generic implements TabInterface
             ['legend' => __('section.io Default Account and Application')]
         );
 
-        $placeholder = $fieldset->addField('label', 'hidden', array(
+        $placeholder = $fieldset->addField('label', 'hidden', [
             'value' => __('section.io Default Account and Application'),
-        ));
+        ]);
 
         // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
@@ -130,7 +130,7 @@ class Settings extends Generic implements TabInterface
             );
 
             /** @var array() $applications */
-            $applications = array();
+            $applications = [];
 
             // create application values for each account
             foreach ($accountData as $key => $value) {
@@ -240,7 +240,7 @@ class Settings extends Generic implements TabInterface
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
         /** @var array() $accountData */
-        $accountData = array();
+        $accountData = [];
         // sets not selected option
         $accountData[0] = 'Not Selected';
         // add available accounts to array
@@ -260,7 +260,7 @@ class Settings extends Generic implements TabInterface
     public function getApplicationData($account_id = NULL) {
 
         /** @var array() $applicationData */
-        $applicationData = array();
+        $applicationData = [];
         // sets not selected option
         $applicationData[0] = 'Not Selected';
 

@@ -118,11 +118,11 @@ class Save extends Action
                     /** @var string $proxy_name */
                     $proxy_name = 'varnish';
                     /** @var string $service_url */
-                    $service_url = $this->helper->generateApertureUrl(array('accountId' => $account_id, 'applicationId' => $application_id, 'environmentName' => $environment_name, 'proxyName' => $proxy_name, 'uriStem' => '/configuration'));
+                    $service_url = $this->helper->generateApertureUrl(['accountId' => $account_id, 'applicationId' => $application_id, 'environmentName' => $environment_name, 'proxyName' => $proxy_name, 'uriStem' => '/configuration']);
                     /** Extract the generated Varnish 4 VCL code */
                     $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
                     /** POST VCL to the varnish proxy **/
-                    $this->helper->performCurl($service_url, 'POST', array('content' => $vcl, 'personality' => 'MagentoTurpentine'));
+                    $this->helper->performCurl($service_url, 'POST', ['content' => $vcl, 'personality' => 'MagentoTurpentine']);
 
                 }
                 else {

@@ -68,9 +68,9 @@ class Credentials extends Generic implements TabInterface
             ['legend' => __('section.io Account Credentials')]
         );
 
-        $placeholder = $fieldset->addField('label', 'hidden', array(
+        $placeholder = $fieldset->addField('label', 'hidden', [
             'value' => __('section.io Account Credentials'),
-        ));
+        ]);
 
         // credentials provided
         if ($general_id = $settingsFactory->getData('general_id')) {

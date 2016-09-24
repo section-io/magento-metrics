@@ -71,7 +71,7 @@ class FetchInfo extends Action
         /** @var int $general_id */
         $general_id = $settingsFactory->getData('general_id');
         /** @var string $service_url */
-        $service_url = $this->helper->generateApertureUrl(array('uriStem' => '/account'));
+        $service_url = $this->helper->generateApertureUrl(['uriStem' => '/account']);
         // remove the existing accounts
         $this->cleanSettings();
         // perform account curl call
@@ -84,15 +84,15 @@ class FetchInfo extends Action
                 /** @var string $hostname */
                 $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
                 /** @var string $service_url */
-                $service_url = $this->helper->generateApertureUrl(array('uriStem' => '/origin?hostName=' . $hostname));
+                $service_url = $this->helper->generateApertureUrl(['uriStem' => '/origin?hostName=' . $hostname]);
                 /** @var array $origin */
                 $origin = json_decode($this->helper->performCurl($service_url)['body_content'], true);
                 /** @var string $origin_address */
                 $origin_address = $origin['origin_detected'] ? $origin['origin'] : '192.168.35.10';
                 /** @var array $payload */
-                $payload = array('name' => $hostname, 'hostname' => $hostname, 'origin' => $origin_address, 'stackName' => 'varnish');
+                $payload = ['name' => $hostname, 'hostname' => $hostname, 'origin' => $origin_address, 'stackName' => 'varnish'];
                 /** @var string $service_url */
-                $service_url = $this->helper->generateApertureUrl(array('uriStem' => '/account/create'));
+                $service_url = $this->helper->generateApertureUrl(['uriStem' => '/account/create']);
                 /** @var array $account_response */
                 $account_response = $this->helper->performCurl($service_url, 'POST', $payload);
                 /** @var string $account_content */
@@ -106,7 +106,7 @@ class FetchInfo extends Action
 
                 $this->logger->info('Retrieving certificate started for ' . $hostname);
                 $certificate_url = 'https://aperture.section.io/api/v1/account/' . $account_content['id'] . '/domain/' . $hostname . '/renewCertificate';
-                $certificate_response = $this->helper->performCurl($certificate_url, 'POST', array());
+                $certificate_response = $this->helper->performCurl($certificate_url, 'POST', []);
                 $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 
@@ -119,7 +119,7 @@ class FetchInfo extends Action
                 /** @var int $account_id */
                 if ($account_id = $this->updateAccount($general_id, $id, $account_name)) {
                     /** @var string $service_url */
-                    $service_url = $this->helper->generateApertureUrl(array('accountId' => $id, 'uriStem' => '/application'));
+                    $service_url = $this->helper->generateApertureUrl(['accountId' => $id, 'uriStem' => '/application']);
                     // perform application curl call
                     if ($applicationData = json_decode($this->helper->performCurl($service_url)['body_content'], true)) {
                         // loop through available applications
