@@ -81,19 +81,12 @@ class Settings extends Generic implements TabInterface
             'value' => __('section.io Default Account and Application'),
         ));
 
-        /** @var string $ectionio_url */
-        $sectionio_url = 'https://aperture.section.io/';
-
         // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
-            // change section.io link to use default account
-            if ($account_id = $this->getActiveAccountByGeneralId($general_id)) {
-                $sectionio_url = 'https://aperture.section.io/account/' . $account_id . '/';
-            }
             $placeholder->setBeforeElementHtml('
                 <div class="messages">
                     <div class="message message-notice">
-                        Please choose your default account and application.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
+                        Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
                     </div>
                 </div>
             ');

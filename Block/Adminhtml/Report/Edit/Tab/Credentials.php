@@ -72,19 +72,12 @@ class Credentials extends Generic implements TabInterface
             'value' => __('section.io Account Credentials'),
         ));
 
-        /** @var string $ectionio_url */
-        $sectionio_url = 'https://aperture.section.io/';
-
         // credentials provided
         if ($general_id = $settingsFactory->getData('general_id')) {
-            // change section.io link to use default account
-            if ($account_id = $this->getActiveAccountByGeneralId($general_id)) {
-                $sectionio_url = 'https://aperture.section.io/account/' . $account_id . '/';
-            }
             $placeholder->setBeforeElementHtml('
                 <div class="messages">
                     <div class="message message-notice">
-                        Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
+                        Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
                     </div>
                 </div>
             ');
@@ -94,7 +87,7 @@ class Credentials extends Generic implements TabInterface
             $placeholder->setBeforeElementHtml('
                 <div class="messages">
                     <div class="message message-notice">
-                        Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
+                        Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
                     </div>
                 </div>
             ');
