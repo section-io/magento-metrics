@@ -19,6 +19,9 @@ class FetchInfo extends Action
     protected $applicationFactory;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
+    /** @var \Psr\Log\LoggerInterface $logger */
+    protected $logger;
+
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -27,6 +30,7 @@ class FetchInfo extends Action
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -34,7 +38,8 @@ class FetchInfo extends Action
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Sectionio\Metrics\Helper\Data $helper
+        \Sectionio\Metrics\Helper\Data $helper,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
@@ -42,6 +47,7 @@ class FetchInfo extends Action
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     /**
