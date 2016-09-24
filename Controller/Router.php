@@ -17,7 +17,7 @@ class Router implements \Magento\Framework\App\RouterInterface
     protected $url;
     /** @var \Magento\Framework\App\ResponseInterface */
     protected $response;
-
+    /** @var \Psr\Log\LoggerInterface */
     protected $logger;
     /**
      * @param \Magento\Framework\App\ActionFactory $actionFactory
@@ -44,8 +44,18 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
-        $this->response->setRedirect('http://www.google.com', 301);
+        //It must match /.well-known\/acme-challenge\*
+        if (!preg_match('/^\/.well-known\/acme-challenge\/([\w]+)$/', $request->getPathInfo(), $matches)) {
+            return null;
+        }
+
+        $token = $matches[1];
+
+        $this->response->setHttpResponseCode(200);
+        $this->response->setHeader('Content-Type', 'text/plain');
+        $this->response->setBody($token);
         $request->setDispatched(true);
-        return $this->actionFactory->create(\Magento\Framework\App\Action\Forward::class);
+
+        return $this->actionFactory->create(\Magento\Framework\App\Action\Redirect::class);
     }
 }
