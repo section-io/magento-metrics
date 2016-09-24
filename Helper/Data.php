@@ -92,7 +92,7 @@ class Data extends AbstractHelper
                                 // append time zone
                                 $service_url .= '&tz=' . $this->scopeConfig->getValue('general/locale/timezone', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                                 /** @var object $image */
-                                if ($image = $this->performCurl($service_url)) {
+                                if ($image = $this->performCurl($service_url)['body_content']) {
                                     // build return array
                                     $response[$count]['title'] = $chart['title'];
                                     $response[$count]['chart'] = base64_encode ($image);
@@ -166,10 +166,11 @@ class Data extends AbstractHelper
         }
 
         // if response received
-        if ($curl_response = curl_exec($ch)) {
-            return $curl_response;
-        }
-        return false;
+        $curl_response = curl_exec($ch);
+        $curl_info = curl_getinfo($ch);
+        $curl_info['body_content'] = $curl_response;
+
+        return $curl_info;
     }
 
 }

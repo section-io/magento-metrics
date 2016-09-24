@@ -80,7 +80,7 @@ class FetchInfo extends Action
                     /** @var string $service_url */
                     $service_url = 'https://aperture.section.io/api/v1/account/' . $id . '/application';
                     // perform application curl call
-                    if ($applicationData = json_decode($this->helper->performCurl($service_url), true)) {
+                    if ($applicationData = json_decode($this->helper->performCurl($service_url)['body_content'], true)) {
                         // loop through available applications
                         foreach ($applicationData as $application) {
                             /** @var int $application_id */
