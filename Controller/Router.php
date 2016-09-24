@@ -42,7 +42,7 @@ class Router implements \Magento\Framework\App\RouterInterface
         $urlPath = $request->getPathInfo();
 
         //It must match /.well-known\/acme-challenge\*
-        if (!preg_match('/^\/.well-known\/acme-challenge\/([\w]+)$/', $urlPath, $matches)) {
+        if (!preg_match('/^\/.well-known\/acme-challenge\/([\w\-]+)$/', $urlPath, $matches)) {
             return null;
         }
 

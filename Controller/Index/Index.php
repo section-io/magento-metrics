@@ -30,10 +30,11 @@ class Index extends \Magento\Framework\App\Action\Action
     {
         $token = $this->getRequest()->getParam('token');
         $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
-        $acmeResponse = $this->performAcmeRequest($token, $hostname);
+        $response = $this->performAcmeRequest($token, $hostname);
 
         $result = $this->resultRawFactory->create();
-        $result = $result->setContents($acmeResponse['body_content']);
+        $result = $result->setStatusHeader($response['http_code']);
+        $result = $result->setContents($response['body_content']);
         return $result;
     }
 
