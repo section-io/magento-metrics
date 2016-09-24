@@ -21,7 +21,7 @@ class Save extends Action
     protected $pageCacheConfig;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
-
+    /** @var \Psr\Log\LoggerInterface $logger */
     protected $logger;
 
     /**
