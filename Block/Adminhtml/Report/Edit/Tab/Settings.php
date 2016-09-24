@@ -16,12 +16,12 @@ class Settings extends Generic implements TabInterface
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
-    
+
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory 
+     * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param array $data
@@ -76,15 +76,15 @@ class Settings extends Generic implements TabInterface
             'edit_form_fieldset_settings',
             ['legend' => __('section.io Default Account and Application')]
         );
-		
+
         $placeholder = $fieldset->addField('label', 'hidden', array(
             'value' => __('section.io Default Account and Application'),
-        )); 
-		
+        ));
+
         /** @var string $ectionio_url */
         $sectionio_url = 'https://aperture.section.io/';
-        
-        // only display if account credentials have been provided    
+
+        // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
             // change section.io link to use default account
             if ($account_id = $this->getActiveAccountByGeneralId($general_id)) {
@@ -95,7 +95,7 @@ class Settings extends Generic implements TabInterface
                     <div class="message message-notice">
                         Please choose your default account and application.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
                     </div>
-                </div>        
+                </div>
             ');
             /** @var string $url */
             $url = $this->getUrl('*/*/fetchInfo');
@@ -108,7 +108,7 @@ class Settings extends Generic implements TabInterface
                         'title' => __('Click here to update available accounts and applications.'),
                         'onclick' => "setLocation('{$url}')"
                     ]
-            ); 
+            );
             /** @var array() $accountData */
             $accountData = $this->getAccountData($general_id);
             /** @var int $defaultAccount */
@@ -120,8 +120,8 @@ class Settings extends Generic implements TabInterface
                 'account_id',
                 'select',
                 [
-                    'name' => 'account_id', 
-                    'label' => __('Default Account'), 
+                    'name' => 'account_id',
+                    'label' => __('Default Account'),
                     'title' => __('Default Account'),
                     'style' => 'width:75%',
                     'value' => $defaultAccount,
@@ -129,13 +129,13 @@ class Settings extends Generic implements TabInterface
                     'options' => $accountData
                 ]
             );
-            
+
             $default_map = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Form\Element\Dependence');
             $default_map->addFieldMap(
                 $accountIdField->getHtmlId(),
                 $accountIdField->getName()
             );
-            
+
             /** @var array() $applications */
             $applications = array();
 
@@ -151,8 +151,8 @@ class Settings extends Generic implements TabInterface
                     ('application_id' . $key),
                     'select',
                     [
-                        'name' => ('application_id' . $key), 
-                        'label' => __('Default Application'), 
+                        'name' => ('application_id' . $key),
+                        'label' => __('Default Application'),
                         'title' => __('Default Application'),
                         'style' => 'width:75%',
                         'value' => $defaultApplication,
@@ -169,8 +169,8 @@ class Settings extends Generic implements TabInterface
                         $applications[$key]->getName(),
                         $accountIdField->getName(),
                         $key
-                );      
-            } 
+                );
+            }
             $this->setChild('form_after', $default_map);
             // button to save default selections
             $fieldset->addField(
@@ -190,15 +190,15 @@ class Settings extends Generic implements TabInterface
                     <div class="message message-notice">
                         Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
                     </div>
-                </div>        
-            ');                
+                </div>
+            ');
         }
-		
+
         $this->setForm($form);
 
-        return parent::_prepareForm();        
+        return parent::_prepareForm();
     }
-    
+
     /**
      * Prepare label for tab
      *
@@ -208,7 +208,7 @@ class Settings extends Generic implements TabInterface
     {
         return __('Default Account and Application');
     }
- 
+
     /**
      * Prepare title for tab
      *
@@ -218,7 +218,7 @@ class Settings extends Generic implements TabInterface
     {
         return __('Default Account and Application');
     }
- 
+
     /**
      * {@inheritdoc}
      */
@@ -226,7 +226,7 @@ class Settings extends Generic implements TabInterface
     {
         return true;
     }
- 
+
     /**
      * {@inheritdoc}
      */
@@ -234,7 +234,7 @@ class Settings extends Generic implements TabInterface
     {
         return false;
     }
-    
+
     /**
      * Get account data to populate account_id form field
      *
@@ -247,7 +247,7 @@ class Settings extends Generic implements TabInterface
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
         /** @var array() $accountData */
-        $accountData = array();    
+        $accountData = array();
         // sets not selected option
         $accountData[0] = 'Not Selected';
         // add available accounts to array
@@ -256,7 +256,7 @@ class Settings extends Generic implements TabInterface
         }
         return $accountData;
     }
-    
+
     /**
      * Get application data to populate application_id form field
      *
@@ -270,7 +270,7 @@ class Settings extends Generic implements TabInterface
         $applicationData = array();
         // sets not selected option
         $applicationData[0] = 'Not Selected';
-        
+
         if ($account_id) {
             /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $accountCollection */
             $accountCollection = $this->accountFactory->create()->getCollection();
@@ -278,10 +278,10 @@ class Settings extends Generic implements TabInterface
             foreach ($accountCollection as $account) {
                 // if application is part of current account
                 if ($account->getData('account_id') == $account_id) {
-                    /** @var int $id */ 
+                    /** @var int $id */
                     $id = $account->getData('id');
                     /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
-                    if ($collection = $this->applicationFactory->create()->getCollection()) {    
+                    if ($collection = $this->applicationFactory->create()->getCollection()) {
                         // build response
                         foreach ($collection as $application) {
                             // filter by account_id
@@ -295,7 +295,7 @@ class Settings extends Generic implements TabInterface
         }
         return ($applicationData);
     }
-    
+
     /**
      * Get active account
      *
@@ -310,13 +310,13 @@ class Settings extends Generic implements TabInterface
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $collection->getFirstItem();
-        
+
         if ($account_id = $accountFactory->getData('account_id')) {
             return $account_id;
         }
         return false;
     }
-    
+
     /**
      * Get active application
      *
@@ -343,12 +343,12 @@ class Settings extends Generic implements TabInterface
         foreach ($collection as $application) {
             // if accounts match
             if ($application->getData('account_id') == $id) {
-                // if is active 
+                // if is active
                 if ($application->getData('is_active')) {
                     return $application->getData('application_id');
                 }
             }
         }
         return false;
-    }    
+    }
 }

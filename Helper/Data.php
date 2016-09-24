@@ -19,6 +19,8 @@ class Data extends AbstractHelper
     protected $scopeConfig;
      /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
     protected $encryptor;
+    /** @var \Psr\Log\LoggerInterface $logger */
+    protected $logger;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -26,13 +28,15 @@ class Data extends AbstractHelper
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
@@ -40,6 +44,7 @@ class Data extends AbstractHelper
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $context->getScopeConfig();
         $this->encryptor = $encryptor;
+        $this->logger = $logger;
     }
 
     /**
@@ -87,7 +92,7 @@ class Data extends AbstractHelper
                                 // append time zone
                                 $service_url .= '&tz=' . $this->scopeConfig->getValue('general/locale/timezone', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                                 /** @var object $image */
-                                if ($image = $this->performCurl($service_url)) {
+                                if ($image = $this->performCurl($service_url)['body_content']) {
                                     // build return array
                                     $response[$count]['title'] = $chart['title'];
                                     $response[$count]['chart'] = base64_encode ($image);
@@ -160,11 +165,12 @@ class Data extends AbstractHelper
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
         }
 
-        // if response received
-        if ($curl_response = curl_exec($ch)) {
-            return $curl_response;
-        }
-        return false;
+        // construct the response object from the curl info and the body response
+        $curl_response = curl_exec($ch);
+        $curl_info = curl_getinfo($ch);
+        $curl_info['body_content'] = $curl_response;
+
+        return $curl_info;
     }
 
 }

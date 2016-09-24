@@ -16,7 +16,7 @@ class Metrics extends Generic implements TabInterface
     protected $applicationFactory;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
-    
+
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -60,7 +60,7 @@ class Metrics extends Generic implements TabInterface
      * @return $this
      */
     protected function _prepareForm()
-    {        
+    {
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
         $accountFactory = $this->accountFactory->create();
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
@@ -96,10 +96,10 @@ class Metrics extends Generic implements TabInterface
                $placeholder->setBeforeElementHtml('
                     <div>
                         <div>' . $data['intro'] . '</div>
-                    </div>        
-                ');  
+                    </div>
+                ');
                 $intro = $data['intro'];
-                unset ($data['intro']);	
+                unset ($data['intro']);
             }
 
             // loop through $data
@@ -124,22 +124,22 @@ class Metrics extends Generic implements TabInterface
                     $field[$count]->setAfterElementHtml('
                         <div>' . $chart['help'] . '<a href="' . $chart['docs'] . '" style="color: #FF0000" target="_blank">   Read more.</a></div><br>
                         <img src="data:image/png;base64,' . $chart['chart'] . '">
-                    ');					
+                    ');
                 }
                 // increment $count
-                $count ++;            
+                $count ++;
             }
         }
         // unable to retrieve content
         else {
             /** @var string $ectionio_url */
-            $sectionio_url = 'https://aperture.section.io/';   
+            $sectionio_url = 'https://aperture.section.io/';
 
             // change section.io link to use default account
             if ($account_id) {
                 $sectionio_url = 'https://aperture.section.io/account/' . $account_id . '/';
             }
-			
+
             $fieldset = $form->addFieldset(
                 'edit_form_fieldset_settings',
                 ['legend' => __('section.io Site Metrics')]
@@ -147,22 +147,22 @@ class Metrics extends Generic implements TabInterface
 
             $message = $fieldset->addField('label', 'hidden', array(
                 'value' => __('section.io Account Credentials'),
-            )); 
+            ));
 
             $message->setBeforeElementHtml('
                 <div class="messages">
                     <div class="message message-notice">
                         Unable to retrieve content at this time.  Please make sure to select a default account and application.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
                     </div>
-                </div>        
+                </div>
             ');
         }
 
         $this->setForm($form);
 
-        return parent::_prepareForm();        
+        return parent::_prepareForm();
     }
-    
+
     /**
      * Prepare label for tab
      *
@@ -172,7 +172,7 @@ class Metrics extends Generic implements TabInterface
     {
         return __('section.io Site Metrics');
     }
- 
+
     /**
      * Prepare title for tab
      *
@@ -182,7 +182,7 @@ class Metrics extends Generic implements TabInterface
     {
         return __('section.io Site Metrics');
     }
- 
+
     /**
      * {@inheritdoc}
      */
@@ -190,7 +190,7 @@ class Metrics extends Generic implements TabInterface
     {
         return true;
     }
- 
+
     /**
      * {@inheritdoc}
      */
