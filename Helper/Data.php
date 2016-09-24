@@ -60,7 +60,7 @@ class Data extends AbstractHelper
         /** @var string $service_url */
         $initial_url = 'https://www.section.io/magento-section-io-plugin-config.json';
         /** @var array() $response */
-        $response = array();
+        $response = [];
         /** @var int $count */
         $count = 0;
 
@@ -195,7 +195,7 @@ class Data extends AbstractHelper
             /** @var string $json */
             $json = json_encode($payload);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Content-Length: ' . strlen($json)]);
         }
 
         // construct the response object from the curl info and the body response

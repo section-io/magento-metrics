@@ -3,16 +3,16 @@
  * Copyright © 2016 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Sectionio\Metrics\Model\Resource;
+namespace Sectionio\Metrics\Model\ResourceModel;
 
-class Settings extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class Application extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
-     * @param \Magento\Framework\Model\Resource\Db\Context $context
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param string|null $resourcePrefix
      */
     public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context, 
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
         $resourcePrefix = null
     )
     {
@@ -23,13 +23,13 @@ class Settings extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->_resourcePrefix = $resourcePrefix;
         }
         parent::__construct($context);
-    }    
-    
+    }
+
     protected function _construct()
     {
         $this->_init(
-            'sectionio_settings',
-            'general_id'
+            'sectionio_application',
+            'id'
         );
     }
 

@@ -3,7 +3,7 @@
  * Copyright © 2016 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Sectionio\Metrics\Model\Resource\Application;
+namespace Sectionio\Metrics\Model\ResourceModel\Application;
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
@@ -11,7 +11,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $this->_init(
             'Sectionio\Metrics\Model\Application',
-            'Sectionio\Metrics\Model\Resource\Application'
+            'Sectionio\Metrics\Model\ResourceModel\Application'
         );
     }
 }

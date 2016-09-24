@@ -77,9 +77,9 @@ class Settings extends Generic implements TabInterface
             ['legend' => __('section.io Default Account and Application')]
         );
 
-        $placeholder = $fieldset->addField('label', 'hidden', array(
+        $placeholder = $fieldset->addField('label', 'hidden', [
             'value' => __('section.io Default Account and Application'),
-        ));
+        ]);
 
         // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
@@ -130,7 +130,7 @@ class Settings extends Generic implements TabInterface
             );
 
             /** @var array() $applications */
-            $applications = array();
+            $applications = [];
 
             // create application values for each account
             foreach ($accountData as $key => $value) {
@@ -236,11 +236,11 @@ class Settings extends Generic implements TabInterface
      * @return array()
      */
     public function getAccountData($general_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
         /** @var array() $accountData */
-        $accountData = array();
+        $accountData = [];
         // sets not selected option
         $accountData[0] = 'Not Selected';
         // add available accounts to array
@@ -260,12 +260,12 @@ class Settings extends Generic implements TabInterface
     public function getApplicationData($account_id = NULL) {
 
         /** @var array() $applicationData */
-        $applicationData = array();
+        $applicationData = [];
         // sets not selected option
         $applicationData[0] = 'Not Selected';
 
         if ($account_id) {
-            /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $accountCollection */
+            /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $accountCollection */
             $accountCollection = $this->accountFactory->create()->getCollection();
             // loop through results
             foreach ($accountCollection as $account) {
@@ -273,7 +273,7 @@ class Settings extends Generic implements TabInterface
                 if ($account->getData('account_id') == $account_id) {
                     /** @var int $id */
                     $id = $account->getData('id');
-                    /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+                    /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
                     if ($collection = $this->applicationFactory->create()->getCollection()) {
                         // build response
                         foreach ($collection as $application) {
@@ -297,7 +297,7 @@ class Settings extends Generic implements TabInterface
      * @return string
      */
     public function getActiveAccountByGeneralId($general_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
@@ -320,7 +320,7 @@ class Settings extends Generic implements TabInterface
     public function getActiveApplicationByAcccountId($account_id) {
         /** @var int $id */
         $id = 0;
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $accountCollection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $accountCollection */
         $accountCollection = $this->accountFactory->create()->getCollection();
         // translate account_id into $id */
         foreach ($accountCollection as $account) {
@@ -330,7 +330,7 @@ class Settings extends Generic implements TabInterface
                 $id = $account->getData('id');
             }
         }
-        /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $this->applicationFactory->create()->getCollection();
         // loop through collection
         foreach ($collection as $application) {

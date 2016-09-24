@@ -68,9 +68,9 @@ class Credentials extends Generic implements TabInterface
             ['legend' => __('section.io Account Credentials')]
         );
 
-        $placeholder = $fieldset->addField('label', 'hidden', array(
+        $placeholder = $fieldset->addField('label', 'hidden', [
             'value' => __('section.io Account Credentials'),
-        ));
+        ]);
 
         // credentials provided
         if ($general_id = $settingsFactory->getData('general_id')) {
@@ -191,7 +191,7 @@ class Credentials extends Generic implements TabInterface
      * @return string
      */
     public function getActiveAccountByGeneralId($general_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
         $collection->addFieldToFilter('is_active', ['eq' => '1']);

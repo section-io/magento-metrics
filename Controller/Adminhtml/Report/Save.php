@@ -118,11 +118,11 @@ class Save extends Action
                     /** @var string $proxy_name */
                     $proxy_name = 'varnish';
                     /** @var string $service_url */
-                    $service_url = $this->helper->generateApertureUrl(array('accountId' => $account_id, 'applicationId' => $application_id, 'environmentName' => $environment_name, 'proxyName' => $proxy_name, 'uriStem' => '/configuration'));
+                    $service_url = $this->helper->generateApertureUrl(['accountId' => $account_id, 'applicationId' => $application_id, 'environmentName' => $environment_name, 'proxyName' => $proxy_name, 'uriStem' => '/configuration']);
                     /** Extract the generated Varnish 4 VCL code */
                     $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
                     /** POST VCL to the varnish proxy **/
-                    $this->helper->performCurl($service_url, 'POST', array('content' => $vcl, 'personality' => 'MagentoTurpentine'));
+                    $this->helper->performCurl($service_url, 'POST', ['content' => $vcl, 'personality' => 'MagentoTurpentine']);
 
                 }
                 else {
@@ -149,7 +149,7 @@ class Save extends Action
      * @return void
      */
     public function setDefaultAccount($account_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -168,7 +168,7 @@ class Save extends Action
      * @return void
      */
     public function clearDefaultAccount() {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -188,7 +188,7 @@ class Save extends Action
      * @return void
      */
     public function setDefaultApplication($application_id) {
-        /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $this->applicationFactory->create()->getCollection();
         $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
@@ -207,7 +207,7 @@ class Save extends Action
      * @return void
      */
     public function clearDefaultApplication() {
-        /** @var \Sectionio\Metrics\Model\Resource\Application\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $this->applicationFactory->create()->getCollection();
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
@@ -225,7 +225,7 @@ class Save extends Action
      * @return void
      */
     public function cleanSettings() {
-        /** @var \Sectionio\Metrics\Model\Resource\Account\Collection $collection */
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
         foreach ($collection as $model) {
