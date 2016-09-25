@@ -10,7 +10,7 @@
         <observer name="invalidate_varnish" instance="Sectionio\Metrics\Observer\InvalidateVarnishObserver"/>
     </event>
     <event name="adminhtml_cache_flush_system">
-        <observer name="    " instance="Sectionio\Metrics\Observer\FlushAllCacheObserver"/>
+        <observer name="flush_varnish_pagecache" instance="Sectionio\Metrics\Observer\FlushAllCacheObserver"/>
     </event>
     <event name="clean_media_cache_after">
         <observer name="flush_varnish_pagecache" instance="Sectionio\Metrics\Observer\FlushAllCacheObserver"/>
