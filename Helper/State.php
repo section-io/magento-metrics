@@ -90,4 +90,10 @@ class State extends AbstractHelper
         return 'Development';
     }
 
+    /**
+     * Get target proxy
+    */
+    public function getProxyName() {
+        return 'varnish';
+    }
 }
