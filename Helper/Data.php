@@ -207,8 +207,4 @@ class Data extends AbstractHelper
         return $curl_info;
     }
 
-    public function getHostname () {
-        return parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
-    }
-
 }

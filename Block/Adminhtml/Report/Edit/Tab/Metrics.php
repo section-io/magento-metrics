@@ -10,35 +10,30 @@ use Magento\Backend\Block\Widget\Tab\TabInterface;
 
 class Metrics extends Generic implements TabInterface
 {
-    /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
-    protected $accountFactory;
-    /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
-    protected $applicationFactory;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
+    /** @var \Sectionio\Metrics\Helper\State $helper */
+    protected $state;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
-     * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Sectionio\Metrics\Helper\State $state
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
-        \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
+        \Sectionio\Metrics\Helper\State $state,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
-        $this->accountFactory = $accountFactory;
-        $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
+        $this->state = $state;
         $this->setUseContainer(true);
     }
 
@@ -61,10 +56,6 @@ class Metrics extends Generic implements TabInterface
      */
     protected function _prepareForm()
     {
-        /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
-        $accountFactory = $this->accountFactory->create();
-        /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
-        $applicationFactory = $this->applicationFactory->create();
         /** @var $count */
         $count = 0;
         /** @var \Magento\Framework\Data\Form $form */
@@ -73,15 +64,9 @@ class Metrics extends Generic implements TabInterface
         );
 
         /** @var int $account_id */
-        $account_id = $this->accountFactory->create()->getCollection()
-            ->addFieldToFilter('is_active', ['eq' => '1'])
-            ->getFirstItem()
-            ->getData('account_id');
+        $account_id = $this->state->getAccountId();
         /** @var int $application_id */
-        $application_id = $this->applicationFactory->create()->getCollection()
-            ->addFieldToFilter('is_active', ['eq' => '1'])
-            ->getFirstItem()
-            ->getData('application_id');
+        $application_id = $this->state->getApplicationId();
 
         /** @var array() $data */
         if ($data = $this->helper->getMetrics($account_id, $application_id)) {

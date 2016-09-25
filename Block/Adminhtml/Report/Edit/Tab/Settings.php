@@ -18,7 +18,8 @@ class Settings extends Generic implements TabInterface
     protected $applicationFactory;
     // var \Sectionio\Metrics\Helper\Data $helper
     protected $helper;
-
+    // var \Sectionio\Metrics\Helper\Status $state
+    protected $state;
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -27,6 +28,7 @@ class Settings extends Generic implements TabInterface
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Sectionio\Metrics\Helper\Data $state
      * @param array $data
      */
     public function __construct(
@@ -37,6 +39,7 @@ class Settings extends Generic implements TabInterface
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
+        \Sectionio\Metrics\Helper\State $state,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
@@ -44,6 +47,7 @@ class Settings extends Generic implements TabInterface
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
+        $this->state = $state;
         $this->setUseContainer(true);
     }
 
@@ -56,7 +60,7 @@ class Settings extends Generic implements TabInterface
     {
         parent::_construct();
         $this->setId('edit_defaults');
-        $this->setTitle(__('Account and Application Settings'));
+        $this->setTitle(__('Management'));
     }
 
     /**
@@ -74,7 +78,11 @@ class Settings extends Generic implements TabInterface
         $applicationFactory = $this->applicationFactory->create();
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create(
-            ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
+            ['data' => [
+                'id' => 'edit_settings',
+                'action' => $this->getData('action'),
+                'method' => 'post']
+            ]
         );
 
         $fieldset = $form->addFieldset(
@@ -179,7 +187,7 @@ class Settings extends Generic implements TabInterface
                 [
                     'value' => __('Update application'),
                     'class' => 'action-save action-primary',
-                    'style' => 'width: auto'
+                    'style' => 'width: auto;'
                 ]
             );
 
@@ -191,36 +199,40 @@ class Settings extends Generic implements TabInterface
 
             //Varnish Configuration
             $managementFieldset->addField(
-                'vcl_defaultslabel',
+                'vcl_lbl',
                 'label',
                 [
-                    'value' => __('Update Varnish Configuration with section.io. It will update and apply configuration in the production branch.'),
+                    'value' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the Production branch.',
                 ]
             );
             $managementFieldset->addField(
-                'vcl_defaults',
-                'button',
+                'vcl_btn',
+                'submit',
                 [
+                    'name'  => 'vcl_btn',
                     'value' => __('Update Varnish Configuration'),
-                    'class' => 'action action-secondary'
+                    'class' => 'action action-secondary',
+                    'style' => 'width: auto;'
                 ]
             );
 
             //HTTPS one click
-            $hostname = $this->helper->getHostname();
+            $hostname = $this->state->getHostname();
             $managementFieldset->addField(
-                'acme_defaultslabel',
+                'certificate_lbl',
                 'label',
                 [
-                    'value' => __('Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.'),
+                    'value' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.',
                 ]
             );
             $managementFieldset->addField(
-                'acme_defaults',
-                'button',
+                'certificate_btn',
+                'submit',
                 [
+                    'name'  => 'certificate_btn',
                     'value' => __('One click HTTPS'),
-                    'class' => 'action action-secondary'
+                    'class' => 'action action-secondary',
+                    'style' => 'width: auto;'
                 ]
             );
         }
@@ -247,7 +259,7 @@ class Settings extends Generic implements TabInterface
      */
     public function getTabLabel()
     {
-        return __('Default Account and Application');
+        return __('Management');
     }
 
     /**
@@ -257,7 +269,7 @@ class Settings extends Generic implements TabInterface
      */
     public function getTabTitle()
     {
-        return __('Default Account and Application');
+        return __('Management');
     }
 
     /**

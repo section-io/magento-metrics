@@ -25,6 +25,8 @@ class FetchInfo extends Action
     protected $logger;
     /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
     protected $aperture;
+    /** @var \Sectionio\Metrics\Helper\State $state */
+    protected $state;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -46,7 +48,8 @@ class FetchInfo extends Action
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
         \Psr\Log\LoggerInterface $logger,
-        \Sectionio\Metrics\Helper\Aperture $aperture
+        \Sectionio\Metrics\Helper\Aperture $aperture,
+        \Sectionio\Metrics\Helper\State $state
     ) {
 
         parent::__construct($context);
@@ -57,6 +60,7 @@ class FetchInfo extends Action
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->state = $state;
     }
 
     /**
@@ -86,7 +90,7 @@ class FetchInfo extends Action
 
             if (!$accountData) {
                 /** @var string $hostname */
-                $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
+                $hostname = $this->state->getHostname();
                 /** @var string $service_url */
                 $service_url = $this->helper->generateApertureUrl([
                     'uriStem' => '/origin?hostName=' . $hostname

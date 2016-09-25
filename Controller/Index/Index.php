@@ -32,7 +32,7 @@ class Index extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $token = $this->getRequest()->getParam('token');
-        $response = $this->aperture->acmeChallenge($token, $this->helper->getHostname());
+        $response = $this->aperture->acmeChallenge($token, $this->status->getHostname());
 
         $result = $this->resultRawFactory->create();
         $result = $result->setStatusHeader($response['http_code']);
