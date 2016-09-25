@@ -66,7 +66,6 @@ class Aperture extends AbstractHelper
         if (isset($parameters['uriStem'])) {
             $url .= $parameters['uriStem'];
         }
-        $this->_logger->debug($url);
         return $url;
     }
 
