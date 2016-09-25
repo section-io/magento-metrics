@@ -9,8 +9,6 @@ use Magento\Backend\App\Action;
 
 class Save extends Action
 {
-    /** @var PageFactory */
-    protected $resultPageFactory;
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
     protected $settingsFactory;
     /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -21,37 +19,39 @@ class Save extends Action
     protected $pageCacheConfig;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
-    /** @var \Psr\Log\LoggerInterface $logger */
-    protected $logger;
+    /** @var \Sectionio\Metrics\Helper\State $state */
+    protected $state;
+    /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
+    protected $aperture;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
-     * @param Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\PageCache\Model\Config $pageCacheConfig
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Sectionio\Metrics\Helper\State $state
+     * @param \Sectionio\Metrics\Helper\Aperture $aperture
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\PageCache\Model\Config $pageCacheConfig,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
-        \Psr\Log\LoggerInterface $logger
+        \Sectionio\Metrics\Helper\State $state,
+        \Sectionio\Metrics\Helper\Aperture $aperture
     ) {
         parent::__construct($context);
-        $this->resultPageFactory = $resultPageFactory;
         $this->pageCacheConfig = $pageCacheConfig;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
-        $this->logger = $logger;
+        $this->aperture = $aperture;
+        $this->state = $state;
     }
 
     /**
@@ -61,29 +61,39 @@ class Save extends Action
      */
     public function execute()
     {
+        if ($this->getRequest()->getParam('vcl_btn') != null) {
+            return $this->updateVarnishConfiguration();
+        }
+        if ($this->getRequest()->getParam('certificate_btn') != null) {
+            return $this->certificateChallenge();
+        }
+        return $this->saveConfiguration();
+    }
+
+    public function saveConfiguration() {
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create();
         /** @var int $account_id */
         $account_id = $this->getRequest()->getParam('account_id');
-		/** @var boolean $update_flag */
-		$update_flag = false;
+        /** @var boolean $update_flag */
+        $update_flag = false;
         /** @var int $general_id */
         if ($general_id = $this->getRequest()->getParam('general_id')) {
             // loads model if available
             $settingsFactory->load($general_id);
         }
-		// new account - set update_flag
-		else {
-			$update_flag = true;
-		}
+        // new account - set update_flag
+        else {
+            $update_flag = true;
+        }
         // only update on change
         if ($user_name = $this->getRequest()->getParam('user_name')) {
             if ($user_name != $settingsFactory->getData('user_name')) {
                 $account_id = NULL;
                 $this->cleanSettings();
-				$update_flag = true;
+                $update_flag = true;
                 $settingsFactory->setData('user_name', $user_name);
             }
         }
@@ -92,18 +102,18 @@ class Save extends Action
             if ($password != '') {
                 $account_id = NULL;
                 $this->cleanSettings();
-				$update_flag = true;
-                $this->helper->savePassword($settingsFactory, $password);
+                $update_flag = true;
+                $this->state->savePassword($settingsFactory, $password);
             }
         }
-		// update settings
-		if ($update_flag) {
-			// save updated settings
+        // update settings
+        if ($update_flag) {
+            // save updated settings
             $settingsFactory->save();
-			// fetch new account and application data
-			return $resultRedirect->setPath('metrics/report/fetchInfo');
-		}
-		else {
+            // fetch new account and application data
+            return $resultRedirect->setPath('metrics/report/fetchInfo');
+        }
+        else {
             // if $account_id
             if ($account_id) {
                 // set default account
@@ -112,18 +122,6 @@ class Save extends Action
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
                     $this->setDefaultApplication($application_id);
-
-                    /** @var string $environment_name */
-                    $environment_name = 'Development';
-                    /** @var string $proxy_name */
-                    $proxy_name = 'varnish';
-                    /** @var string $service_url */
-                    $service_url = $this->helper->generateApertureUrl(['accountId' => $account_id, 'applicationId' => $application_id, 'environmentName' => $environment_name, 'proxyName' => $proxy_name, 'uriStem' => '/configuration']);
-                    /** Extract the generated Varnish 4 VCL code */
-                    $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
-                    /** POST VCL to the varnish proxy **/
-                    $this->helper->performCurl($service_url, 'POST', ['content' => $vcl, 'personality' => 'MagentoTurpentine']);
-
                 }
                 else {
                     // clear default application
@@ -139,6 +137,47 @@ class Save extends Action
                 ->addSuccess(__('You have successfully updated the account information.'));
             return $resultRedirect->setPath('metrics/report/index');
         }
+    }
+
+    public function certificateChallenge() {
+        /** @var int $account_id */
+        $account_id = $this->state->getAccountId();
+        /** @var string $hostname */
+        $hostname = $this->state->getHostname();
+
+        $result = $this->aperture->renewCertificate($account_id, $hostname);
+        if ($result['http_code'] == 200) {
+            $this->messageManager->addSuccess(__('A new certificate has been added to your domain ' . $hostname));
+        } else {
+            $this->messageManager->addError(__('Error validating ownership for certificate for domain ' . $hostname . '. Please check that this Magento installation is exposed to the internet on port 80.'));
+        }
+
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultRedirectFactory->create();
+        return $resultRedirect->setPath('metrics/report/index');
+    }
+
+    public function updateVarnishConfiguration() {
+        /** @var int $account_id */
+        $account_id = $this->state->getAccountId();
+        /** @var int $application_id */
+        $application_id = $this->state->getApplicationId();
+        /** @var string $environment_name */
+        $environment_name = $this->state->getEnvironmentName();
+
+        /** Extract the generated Varnish 4 VCL code */
+        $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'MagentoTurpentine');
+
+        if ($result['http_code'] == 200) {
+            $this->messageManager->addSuccess(__('You have successfully updated varnish configuration.'));
+        } else {
+            $this->messageManager->addError(__('Error updating varnish configuration, upstream returned HTTP ' . $result['http_code'] . '.'));
+        }
+
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultRedirectFactory->create();
+        return $resultRedirect->setPath('metrics/report/index');
     }
 
     /**

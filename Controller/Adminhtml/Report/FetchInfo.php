@@ -23,6 +23,10 @@ class FetchInfo extends Action
     protected $helper;
     /** @var \Psr\Log\LoggerInterface $logger */
     protected $logger;
+    /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
+    protected $aperture;
+    /** @var \Sectionio\Metrics\Helper\State $state */
+    protected $state;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -33,6 +37,7 @@ class FetchInfo extends Action
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
      * @param \Psr\Log\LoggerInterface $logger
+     * @param \Sectionio\Metrics\Helper\Aperture $aperture
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -42,7 +47,9 @@ class FetchInfo extends Action
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        \Sectionio\Metrics\Helper\Aperture $aperture,
+        \Sectionio\Metrics\Helper\State $state
     ) {
 
         parent::__construct($context);
@@ -53,6 +60,7 @@ class FetchInfo extends Action
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->state = $state;
     }
 
     /**
@@ -82,9 +90,11 @@ class FetchInfo extends Action
 
             if (!$accountData) {
                 /** @var string $hostname */
-                $hostname = parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
+                $hostname = $this->state->getHostname();
                 /** @var string $service_url */
-                $service_url = $this->helper->generateApertureUrl(['uriStem' => '/origin?hostName=' . $hostname]);
+                $service_url = $this->helper->generateApertureUrl([
+                    'uriStem' => '/origin?hostName=' . $hostname
+                ]);
                 /** @var array $origin */
                 $origin = json_decode($this->helper->performCurl($service_url)['body_content'], true);
                 /** @var string $origin_address */
@@ -105,8 +115,7 @@ class FetchInfo extends Action
                 $accountData[] = $account_content;
 
                 $this->logger->info('Retrieving certificate started for ' . $hostname);
-                $certificate_url = 'https://aperture.section.io/api/v1/account/' . $account_content['id'] . '/domain/' . $hostname . '/renewCertificate';
-                $certificate_response = $this->helper->performCurl($certificate_url, 'POST', []);
+                $certificate_response = $this->aperture->renewCertificate($account_content['id'], $hostname);
                 $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 

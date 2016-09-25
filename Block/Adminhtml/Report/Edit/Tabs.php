@@ -79,7 +79,7 @@ class Tabs extends WidgetTabs
             $this->addTab(
                 'report_edit_tabs_settings',
                 [
-                    'label' => __('Account and Application Settings'),
+                    'label' => __('Management'),
                     'title' => __('Default Account / Application'),
                     'content' => $this->getLayout()->createBlock(
                         'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Settings')

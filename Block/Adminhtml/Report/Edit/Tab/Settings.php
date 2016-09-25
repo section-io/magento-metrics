@@ -16,41 +16,50 @@ class Settings extends Generic implements TabInterface
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    // var \Sectionio\Metrics\Helper\Data $helper
+    protected $helper;
+    // var \Sectionio\Metrics\Helper\Status $state
+    protected $state;
     /** @var \Magento\PageCache\Model\Config $pageCacheConfig */
     protected $pageCacheConfig;
     /** @var \Magento\Backend\Model\UrlInterface $urlBuilder */
     protected $urlBuilder;
-
     protected $logger;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Magento\PageCache\Model\Config $pageCacheConfig
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Sectionio\Metrics\Helper\Data $state
      * @param \Magento\Backend\Model\UrlInterface $urlBuilder
+     * @param \Magento\PageCache\Model\Config $pageCacheConfig
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\PageCache\Model\Config $pageCacheConfig,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Sectionio\Metrics\Helper\Data $helper,
+        \Sectionio\Metrics\Helper\State $state,
         \Magento\Backend\Model\UrlInterface $urlBuilder,
+        \Magento\PageCache\Model\Config $pageCacheConfig,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
-        $this->pageCacheConfig = $pageCacheConfig;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->helper = $helper;
+        $this->state = $state;
         $this->urlBuilder = $urlBuilder;
+        $this->pageCacheConfig = $pageCacheConfig;
         $this->logger = $context->getLogger();
         $this->setUseContainer(true);
     }
@@ -64,7 +73,7 @@ class Settings extends Generic implements TabInterface
     {
         parent::_construct();
         $this->setId('edit_defaults');
-        $this->setTitle(__('Account and Application Settings'));
+        $this->setTitle(__('Management'));
     }
 
     /**
@@ -82,16 +91,31 @@ class Settings extends Generic implements TabInterface
         $applicationFactory = $this->applicationFactory->create();
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create(
-            ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
+            ['data' => [
+                'id' => 'edit_settings',
+                'action' => $this->getData('action'),
+                'method' => 'post']
+            ]
         );
+
+        $pageMessages = [];
+
+        // if Magento is configured to used FPC instead of Varnish, warn the user to change it
+        if ($this->pageCacheConfig->getType() != \Magento\PageCache\Model\Config::VARNISH) {
+            $cacheUrl = $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system');
+            $pageMessages[] = [
+                'type' => 'error',
+                'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="' . $cacheUrl . '">Stores Configuration</a>'
+            ];
+        }
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
-            ['legend' => __('section.io Default Account and Application')]
+            ['legend' => __('Account and Application Selection')]
         );
 
         $placeholder = $fieldset->addField('label', 'hidden', [
-            'value' => __('section.io Default Account and Application'),
+            'value' => __('Account and Application Selection'),
         ]);
 
 
@@ -113,9 +137,10 @@ class Settings extends Generic implements TabInterface
                 'refresh_defaults',
                 'button',
                     [
-                        'value' => __('Refresh Accounts and Applications'),
-                        'title' => __('Click here to update available accounts and applications.'),
-                        'onclick' => "setLocation('{$url}')"
+                        'value'   => __('Refresh Accounts and Applications'),
+                        'title'   => __('Update available accounts and applications.'),
+                        'onclick' => "setLocation('{$url}')",
+                        'class'   => 'action action-secondary',
                     ]
             );
             /** @var array() $accountData */
@@ -186,20 +211,66 @@ class Settings extends Generic implements TabInterface
                 'save_defaults',
                 'submit',
                 [
-                    'value' => __('Save Settings'),
-                    'class' => 'action-save action-secondary',
-                    'style' => 'width:auto'
+                    'value' => __('Update application'),
+                    'class' => 'action-save action-primary',
+                    'style' => 'width: auto;'
                 ]
             );
-        }
-        // no credential provided
-        else {
-            $pageMessages[] = [ 'type' => 'error', 'message' => 'Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here.</a>.'];
+
+            if ($this->state->getApplicationId() != null) {
+                $managementFieldset = $form->addFieldset(
+                    'field_fieldset_settings',
+                    ['legend' => __('Management')]
+                );
+
+                //Varnish Configuration
+                $managementFieldset->addField(
+                    'vcl_lbl',
+                    'label',
+                    [
+                        'value' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the Production branch.',
+                    ]
+                );
+                $managementFieldset->addField(
+                    'vcl_btn',
+                    'submit',
+                    [
+                        'name'  => 'vcl_btn',
+                        'value' => __('Update Varnish Configuration'),
+                        'class' => 'action action-secondary',
+                        'style' => 'width: auto;'
+                    ]
+                );
+
+                //HTTPS one click
+                $hostname = $this->state->getHostname();
+                $managementFieldset->addField(
+                    'certificate_lbl',
+                    'label',
+                    [
+                        'value' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.',
+                    ]
+                );
+                $managementFieldset->addField(
+                    'certificate_btn',
+                    'submit',
+                    [
+                        'name'  => 'certificate_btn',
+                        'value' => __('One click HTTPS'),
+                        'class' => 'action action-secondary',
+                        'style' => 'width: auto;'
+                    ]
+                );
+            }
+        } else {
+            // no credential provided
+            $pageMessages[] = [
+                'type' => 'error',
+                'message' => 'Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here.</a>.'
+            ];
         }
 
-        $messagesHtml = '
-                <div class="messages">';
-
+        $messagesHtml = '<div class="messages">';
         foreach ($pageMessages as $msg) {
             $messagesHtml .= '
                     <div class="message message-' . $msg['type'] . '">
@@ -207,9 +278,7 @@ class Settings extends Generic implements TabInterface
                     </div>';
         }
 
-        $messagesHtml .= '</div>
-            ';
-
+        $messagesHtml .= '</div>';
         $placeholder->setBeforeElementHtml($messagesHtml);
 
         $this->setForm($form);
@@ -224,7 +293,7 @@ class Settings extends Generic implements TabInterface
      */
     public function getTabLabel()
     {
-        return __('Default Account and Application');
+        return __('Management');
     }
 
     /**
@@ -234,7 +303,7 @@ class Settings extends Generic implements TabInterface
      */
     public function getTabTitle()
     {
-        return __('Default Account and Application');
+        return __('Management');
     }
 
     /**
