@@ -20,6 +20,12 @@ class Settings extends Generic implements TabInterface
     protected $helper;
     // var \Sectionio\Metrics\Helper\Status $state
     protected $state;
+    /** @var \Magento\PageCache\Model\Config $pageCacheConfig */
+    protected $pageCacheConfig;
+    /** @var \Magento\Backend\Model\UrlInterface $urlBuilder */
+    protected $urlBuilder;
+    protected $logger;
+
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -29,6 +35,8 @@ class Settings extends Generic implements TabInterface
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
      * @param \Sectionio\Metrics\Helper\Data $state
+     * @param \Magento\Backend\Model\UrlInterface $urlBuilder
+     * @param \Magento\PageCache\Model\Config $pageCacheConfig
      * @param array $data
      */
     public function __construct(
@@ -40,6 +48,8 @@ class Settings extends Generic implements TabInterface
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
         \Sectionio\Metrics\Helper\State $state,
+        \Magento\Backend\Model\UrlInterface $urlBuilder,
+        \Magento\PageCache\Model\Config $pageCacheConfig,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
@@ -48,6 +58,9 @@ class Settings extends Generic implements TabInterface
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
         $this->state = $state;
+        $this->urlBuilder = $urlBuilder;
+        $this->pageCacheConfig = $pageCacheConfig;
+        $this->logger = $context->getLogger();
         $this->setUseContainer(true);
     }
 
@@ -85,6 +98,17 @@ class Settings extends Generic implements TabInterface
             ]
         );
 
+        $pageMessages = [];
+
+        // if Magento is configured to used FPC instead of Varnish, warn the user to change it
+        if ($this->pageCacheConfig->getType() != \Magento\PageCache\Model\Config::VARNISH) {
+            $cacheUrl = $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system');
+            $pageMessages[] = [
+                'type' => 'error',
+                'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="' . $cacheUrl . '">Stores Configuration</a>'
+            ];
+        }
+
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
             ['legend' => __('Account and Application Selection')]
@@ -94,16 +118,18 @@ class Settings extends Generic implements TabInterface
             'value' => __('Account and Application Selection'),
         ]);
 
+
+        $pageMessages = [];
+
+        // if Magento is configured to used FPC instead of Varnish, warn the user to change it
+        if ($this->pageCacheConfig->getType() != \Magento\PageCache\Model\Config::VARNISH) {
+            $pageMessages[] = [ 'type' => 'error', 'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="' . $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system') . '">Stores Configuration</a> '];
+        }
+
         // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">
-                        Please select an account and application, once complete you\'ll be able to manage configuration and view platform metrics. For questions and assistance, visit
-                        <a href="https://community.section.io/tags/magento" target=\"_blank\">section.io community</a>.
-                    </div>
-                </div>
-            ');
+            $pageMessages[] = [ 'type' => 'notice', 'message' => 'Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here</a>.'];
+
             /** @var string $url */
             $url = $this->getUrl('*/*/fetchInfo');
             // button to fetch account and application data
@@ -235,17 +261,24 @@ class Settings extends Generic implements TabInterface
                     'style' => 'width: auto;'
                 ]
             );
+        } else {
+            // no credential provided
+            $pageMessages[] = [
+                'type' => 'error',
+                'message' => 'Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here.</a>.'
+            ];
         }
-        // no credential provided
-        else {
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">
-                        Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
-                    </div>
-                </div>
-            ');
+
+        $messagesHtml = '<div class="messages">';
+        foreach ($pageMessages as $msg) {
+            $messagesHtml .= '
+                    <div class="message message-' . $msg['type'] . '">
+                        ' . $msg['message'] . '
+                    </div>';
         }
+
+        $messagesHtml .= '</div>';
+        $placeholder->setBeforeElementHtml($messagesHtml);
 
         $this->setForm($form);
 
