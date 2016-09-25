@@ -9,11 +9,6 @@ class PurgeCache
     const HEADER_X_MAGENTO_TAGS_PATTERN = 'X-Magento-Tags-Pattern';
 
     /**
-     * @var \Magento\CacheInvalidate\Model\SocketFactory
-     */
-    protected $socketAdapterFactory;
-
-    /**
      * @var InvalidateLogger
      */
     private $logger;
@@ -30,18 +25,15 @@ class PurgeCache
     /**
      * Constructor
      *
-     * @param \Magento\CacheInvalidate\Model\SocketFactory $socketAdapterFactory
      * @param InvalidateLogger $logger
      * @param \Sectionio\Metrics\Helper\State $state
      * @param \Sectionio\Metrics\Helper\Aperture $aperture
      */
     public function __construct(
-        \Magento\CacheInvalidate\Model\SocketFactory $socketAdapterFactory,
         InvalidateLogger $logger,
         \Sectionio\Metrics\Helper\State $state,
         \Sectionio\Metrics\Helper\Aperture $aperture
     ) {
-        $this->socketAdapterFactory = $socketAdapterFactory;
         $this->logger = $logger;
         $this->state = $state;
         $this->aperture = $aperture;
