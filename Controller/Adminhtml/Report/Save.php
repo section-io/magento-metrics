@@ -21,6 +21,8 @@ class Save extends Action
     protected $pageCacheConfig;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
+    /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
+    protected $aperture;
     /** @var \Psr\Log\LoggerInterface $logger */
     protected $logger;
 
@@ -32,6 +34,7 @@ class Save extends Action
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
+     * @param \Sectionio\Metrics\Helper\Aperture $aperture
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
@@ -42,6 +45,7 @@ class Save extends Action
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
+        \Sectionio\Metrics\Helper\Aperture $aperture,
         \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
@@ -51,6 +55,7 @@ class Save extends Action
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
         $this->helper = $helper;
+        $this->aperture = $aperture;
         $this->logger = $logger;
     }
 
@@ -112,18 +117,11 @@ class Save extends Action
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
                     $this->setDefaultApplication($application_id);
-
                     /** @var string $environment_name */
                     $environment_name = 'Development';
-                    /** @var string $proxy_name */
-                    $proxy_name = 'varnish';
-                    /** @var string $service_url */
-                    $service_url = $this->helper->generateApertureUrl(['accountId' => $account_id, 'applicationId' => $application_id, 'environmentName' => $environment_name, 'proxyName' => $proxy_name, 'uriStem' => '/configuration']);
                     /** Extract the generated Varnish 4 VCL code */
                     $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
-                    /** POST VCL to the varnish proxy **/
-                    $this->helper->performCurl($service_url, 'POST', ['content' => $vcl, 'personality' => 'MagentoTurpentine']);
-
+                    $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'MagentoTurpentine');
                 }
                 else {
                     // clear default application

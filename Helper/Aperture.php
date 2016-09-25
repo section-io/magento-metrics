@@ -36,6 +36,7 @@ class Aperture extends AbstractHelper
      *
      */
     public function generateUrl ($parameters) {
+        /** @var string $url */
         $url = 'https://aperture.section.io';
 
         if (isset($parameters['api'])) {
@@ -78,6 +79,7 @@ class Aperture extends AbstractHelper
      * @return array() $response
      */
     public function acmeChallenge($token, $hostname) {
+        /** @var string $service_url */
         $service_url = $this->generateUrl([
             'uriStem' => sprintf('/acme/acme-challenge/%s', $token)
         ]);
@@ -101,6 +103,7 @@ class Aperture extends AbstractHelper
     }
 
     public function renewCertificate($accountId, $hostname) {
+        /** @var string $service_url */
         $service_url = $this->generateUrl([
             'api'       => true,
             'accountId' => $accountId,
@@ -108,6 +111,22 @@ class Aperture extends AbstractHelper
             'uriStem'   => '/renewCertificate'
         ]);
         return $this->executeAuthRequest($service_url, 'POST', []);
+    }
+
+    public function updateProxyConfiguration($accountId, $applicationId, $environmentName, $proxyName, $content, $personality) {
+        /** @var string $service_url */
+        $service_url = $this->generateUrl([
+            'api'             => true,
+            'accountId'       => $accountId,
+            'applicationId'   => $applicationId,
+            'environmentName' => $environmentName,
+            'proxyName'       => $proxyName,
+            'uriStem'         => '/configuration'
+        ]);
+        return $this->executeAuthRequest($service_url, 'POST', [
+            'content' => $content,
+            'personality' => $personality
+        ]);
     }
 
     /**
