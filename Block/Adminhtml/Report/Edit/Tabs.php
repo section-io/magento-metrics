@@ -31,13 +31,13 @@ class Tabs extends WidgetTabs
         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
         \Magento\Backend\Model\Auth\Session $authSession,
         \Magento\Framework\Module\Manager $moduleManager,
-		\Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
+        \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         array $data = []
     ) {
         parent::__construct($context, $jsonEncoder, $authSession, $data);
-		$this->settingsFactory = $settingsFactory;
+        $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
     }
@@ -69,12 +69,12 @@ class Tabs extends WidgetTabs
                 ->toHtml()
             ]
         );
-		
+        
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
-		
-		// only display if account credentials are saved
-        if ($settingsFactory->getData('general_id')) {	
+        
+        // only display if account credentials are saved
+        if ($settingsFactory->getData('general_id')) {  
             // account settings tab
             $this->addTab(
                 'report_edit_tabs_settings',
@@ -84,10 +84,10 @@ class Tabs extends WidgetTabs
                     'content' => $this->getLayout()->createBlock(
                         'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Settings')
                     ->toHtml(),
-					'active' => true
+                    'active' => true
                 ]
             );
-		}
+        }
 
         /** @var int $account_id */
         $account_id = $this->accountFactory->create()->getCollection()
@@ -108,8 +108,7 @@ class Tabs extends WidgetTabs
                     'title' => __('View Site Metrics'),
                     'content' => $this->getLayout()->createBlock(
                         'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Metrics'
-                    )->toHtml(),
-                    'active' => true
+                    )->toHtml()
                 ]
             );            
         }
