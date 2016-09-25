@@ -16,29 +16,42 @@ class Settings extends Generic implements TabInterface
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    /** @var \Magento\PageCache\Model\Config $pageCacheConfig */
+    protected $pageCacheConfig;
+    /** @var \Magento\Backend\Model\UrlInterface $urlBuilder */
+    protected $urlBuilder;
+
+    protected $logger;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
+     * @param \Magento\PageCache\Model\Config $pageCacheConfig
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Magento\Backend\Model\UrlInterface $urlBuilder
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
+        \Magento\PageCache\Model\Config $pageCacheConfig,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Magento\Backend\Model\UrlInterface $urlBuilder,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
+        $this->pageCacheConfig = $pageCacheConfig;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->urlBuilder = $urlBuilder;
+        $this->logger = $context->getLogger();
         $this->setUseContainer(true);
     }
 
@@ -81,15 +94,18 @@ class Settings extends Generic implements TabInterface
             'value' => __('section.io Default Account and Application'),
         ]);
 
+
+        $pageMessages = [];
+
+        // if Magento is configured to used FPC instead of Varnish, warn the user to change it
+        if ($this->pageCacheConfig->getType() != \Magento\PageCache\Model\Config::VARNISH) {
+            $pageMessages[] = [ 'type' => 'error', 'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="' . $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system') . '">Stores Configuration</a> '];
+        }
+
         // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">
-                        Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
-                    </div>
-                </div>
-            ');
+            $pageMessages[] = [ 'type' => 'notice', 'message' => 'Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here</a>.'];
+
             /** @var string $url */
             $url = $this->getUrl('*/*/fetchInfo');
             // button to fetch account and application data
@@ -178,14 +194,23 @@ class Settings extends Generic implements TabInterface
         }
         // no credential provided
         else {
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">
-                        Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="' . $sectionio_url . '" target="_blank">click here.</a>.
-                    </div>
-                </div>
-            ');
+            $pageMessages[] = [ 'type' => 'error', 'message' => 'Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here.</a>.'];
         }
+
+        $messagesHtml = '
+                <div class="messages">';
+
+        foreach ($pageMessages as $msg) {
+            $messagesHtml .= '
+                    <div class="message message-' . $msg['type'] . '">
+                        ' . $msg['message'] . '
+                    </div>';
+        }
+
+        $messagesHtml .= '</div>
+            ';
+
+        $placeholder->setBeforeElementHtml($messagesHtml);
 
         $this->setForm($form);
 
