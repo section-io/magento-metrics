@@ -99,7 +99,7 @@ class Settings extends Generic implements TabInterface
 
         // if Magento is configured to used FPC instead of Varnish, warn the user to change it
         if ($this->pageCacheConfig->getType() != \Magento\PageCache\Model\Config::VARNISH) {
-            $pageMessages[] = [ 'type' => 'error', 'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option under the Full Page Cache settings in <a href="' . $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system') . '">Stores Configuration</a> '];
+            $pageMessages[] = [ 'type' => 'error', 'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="' . $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system') . '">Stores Configuration</a> '];
         }
 
         // only display if account credentials have been provided
