@@ -66,7 +66,6 @@ class Aperture extends AbstractHelper
         if (isset($parameters['uriStem'])) {
             $url .= $parameters['uriStem'];
         }
-        $this->_logger->debug($url);
         return $url;
     }
 
@@ -127,6 +126,17 @@ class Aperture extends AbstractHelper
             'content' => $content,
             'personality' => $personality
         ]);
+    }
+
+    public function verifyEngaged($accountId, $applicationId) {
+        /** @var string $service_url */
+        $service_url = $this->generateUrl([
+            'api'           => true,
+            'accountId'     => $accountId,
+            'applicationId' => $applicationId,
+            'uriStem'       => '/verifyEngaged'
+        ]);
+        return $this->executeAuthRequest($service_url);
     }
 
     /**

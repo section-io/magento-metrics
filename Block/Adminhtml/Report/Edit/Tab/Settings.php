@@ -219,16 +219,16 @@ class Settings extends Generic implements TabInterface
 
             if ($this->state->getApplicationId() != null) {
                 $managementFieldset = $form->addFieldset(
-                    'field_fieldset_settings',
+                    'field_fieldset_management',
                     ['legend' => __('Management')]
                 );
 
                 //Varnish Configuration
                 $managementFieldset->addField(
                     'vcl_lbl',
-                    'label',
+                    'note',
                     [
-                        'value' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the Production branch.',
+                        'text' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the <strong>Production branch</strong>.'
                     ]
                 );
                 $managementFieldset->addField(
@@ -236,7 +236,7 @@ class Settings extends Generic implements TabInterface
                     'submit',
                     [
                         'name'  => 'vcl_btn',
-                        'value' => __('Update Varnish Configuration'),
+                        'value' => __('Update varnish configuration'),
                         'class' => 'action action-secondary',
                         'style' => 'width: auto;'
                     ]
@@ -246,9 +246,9 @@ class Settings extends Generic implements TabInterface
                 $hostname = $this->state->getHostname();
                 $managementFieldset->addField(
                     'certificate_lbl',
-                    'label',
+                    'note',
                     [
-                        'value' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.',
+                        'text' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain <strong>' . $hostname . '</strong> must be exposed on the internet over port 80/HTTP.'
                     ]
                 );
                 $managementFieldset->addField(
@@ -259,6 +259,50 @@ class Settings extends Generic implements TabInterface
                         'value' => __('One click HTTPS'),
                         'class' => 'action action-secondary',
                         'style' => 'width: auto;'
+                    ]
+                );
+
+                $dnsFieldset = $form->addFieldset(
+                    'field_fieldset_dns',
+                    ['legend' => __('Go-live steps')]
+                );
+
+                $domainUrl = 'https://aperture.section.io/account/'
+                    . $this->state->getAccountId()
+                    . '/application/'
+                    . $this->state->getApplicationId()
+                    . '/environment/Production/domains';
+
+                $dnsFieldset->addField(
+                    'dns_lbl',
+                    'note',
+                    [
+                        'text' => '
+                            Going live with section.io is as straightforward as changing a DNS record.
+                            <a href="' . $domainUrl . '">Visit aperture to view instructions</a> on how to complete.
+                        '
+                    ]
+                );
+
+                $dnsFieldset->addField(
+                    'verify_btn',
+                    'submit',
+                    [
+                        'name'  => 'verify_btn',
+                        'value' => __('Verify DNS change'),
+                        'class' => 'action action-secondary',
+                        'style' => 'width: auto;'
+                    ]
+                );
+
+                $dnsFieldset->addField(
+                    'launch_btn',
+                    'button',
+                    [
+                        'value' => __('Launch aperture'),
+                        'class' => 'action action-secondary',
+                        'style' => 'width: auto;',
+                        'onclick' => 'setLocation(\'' . $domainUrl . '\')'
                     ]
                 );
             }
