@@ -67,6 +67,9 @@ class Save extends Action
         if ($this->getRequest()->getParam('certificate_btn') != null) {
             return $this->certificateChallenge();
         }
+        if ($this->getRequest()->getParam('verify_btn') != null) {
+            return $this->verifyApplication();
+        }
         return $this->saveConfiguration();
     }
 
@@ -173,6 +176,31 @@ class Save extends Action
             $this->messageManager->addSuccess(__('You have successfully updated varnish configuration.'));
         } else {
             $this->messageManager->addError(__('Error updating varnish configuration, upstream returned HTTP ' . $result['http_code'] . '.'));
+        }
+
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultRedirectFactory->create();
+        return $resultRedirect->setPath('metrics/report/index');
+    }
+
+    public function verifyApplication() {
+        /** @var int $account_id */
+        $account_id = $this->state->getAccountId();
+        /** @var int $account_id */
+        $application_id = $this->state->getApplicationId();
+        /** @var string $hostname */
+        $hostname = $this->state->getHostname();
+
+        $result = $this->aperture->verifyEngaged($account_id, $application_id);
+        if ($result['http_code'] == 200) {
+            $body = json_decode($result['body_content'], true);
+            if ($body['is_engaged'] == true) {
+                $this->messageManager->addSuccess('Success! DNS for ' . $hostname . ' has been configured correctly.');
+            } else {
+                $this->messageManager->addError('DNS verification failed for ' . $hostname . '.');
+            }
+        } else {
+            $this->messageManager->addError('Unexpected response from server HTTP ' . $result['http_code']);
         }
 
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

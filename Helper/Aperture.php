@@ -128,6 +128,17 @@ class Aperture extends AbstractHelper
         ]);
     }
 
+    public function verifyEngaged($accountId, $applicationId) {
+        /** @var string $service_url */
+        $service_url = $this->generateUrl([
+            'api'           => true,
+            'accountId'     => $accountId,
+            'applicationId' => $applicationId,
+            'uriStem'       => '/verifyEngaged'
+        ]);
+        return $this->executeAuthRequest($service_url);
+    }
+
     /**
      * Perform Sectionio curl call
      *
