@@ -9,7 +9,7 @@
     <type name="Magento\Framework\App\RouterList">
         <arguments>
             <argument name="routerList" xsi:type="array">
-                <item name="urlrewrite" xsi:type="array">
+                <item name="acmechallenge" xsi:type="array">
                     <item name="class" xsi:type="string">Sectionio\Metrics\Controller\Router</item>
                     <item name="disable" xsi:type="boolean">false</item>
                     <item name="sortOrder" xsi:type="string">40</item>
