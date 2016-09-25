@@ -61,6 +61,7 @@ class FetchInfo extends Action
         $this->helper = $helper;
         $this->logger = $logger;
         $this->state = $state;
+        $this->aperture = $aperture;
     }
 
     /**
