@@ -19,6 +19,8 @@ class Data extends AbstractHelper
     protected $scopeConfig;
      /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
     protected $encryptor;
+    // var \Magento\Store\Model\StoreManagerInterface $storeManager
+    protected $storeManager;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -32,7 +34,8 @@ class Data extends AbstractHelper
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
@@ -40,6 +43,7 @@ class Data extends AbstractHelper
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $context->getScopeConfig();
         $this->encryptor = $encryptor;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -154,10 +158,8 @@ class Data extends AbstractHelper
         if (isset($parameters['uriStem'])) {
             $url .= $parameters['uriStem'];
         }
-        $this->logger->debug($url);
+        $this->_logger->debug($url);
         return $url;
-
-
     }
 
     /**
@@ -203,6 +205,10 @@ class Data extends AbstractHelper
         $curl_info['body_content'] = $curl_response;
 
         return $curl_info;
+    }
+
+    public function getHostname () {
+        return parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
     }
 
 }

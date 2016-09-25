@@ -14,21 +14,16 @@ class Router implements \Magento\Framework\App\RouterInterface
     protected $actionFactory;
     /** @var \Magento\Framework\App\ResponseInterface */
     protected $response;
-    /** @var \Psr\Log\LoggerInterface */
-    protected $logger;
     /**
      * @param \Magento\Framework\App\ActionFactory $actionFactory
      * @param \Magento\Framework\App\ResponseInterface $response
-     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Framework\App\ActionFactory $actionFactory,
-        \Magento\Framework\App\ResponseInterface $response,
-        \Psr\Log\LoggerInterface $logger
+        \Magento\Framework\App\ResponseInterface $response
     ) {
         $this->actionFactory = $actionFactory;
         $this->response = $response;
-        $this->logger = $logger;
     }
     /**
      * Match well known url for acme challege

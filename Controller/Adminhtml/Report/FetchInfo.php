@@ -23,6 +23,8 @@ class FetchInfo extends Action
     protected $helper;
     /** @var \Psr\Log\LoggerInterface $logger */
     protected $logger;
+    /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
+    protected $aperture;
 
     /**
      * @param Magento\Backend\App\Action\Context $context
@@ -33,6 +35,7 @@ class FetchInfo extends Action
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
      * @param \Psr\Log\LoggerInterface $logger
+     * @param \Sectionio\Metrics\Helper\Aperture $aperture
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -42,7 +45,8 @@ class FetchInfo extends Action
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        \Sectionio\Metrics\Helper\Aperture $aperture
     ) {
 
         parent::__construct($context);
@@ -107,12 +111,7 @@ class FetchInfo extends Action
                 $accountData[] = $account_content;
 
                 $this->logger->info('Retrieving certificate started for ' . $hostname);
-                $service_url = $this->helper->generateApertureUrl([
-                    'accountId' => $account_content['id'],
-                    'domain'    => $hostname,
-                    'uriStem'   => '/renewCertificate'
-                ]);
-                $certificate_response = $this->helper->performCurl($service_url, 'POST', []);
+                $certificate_response = $this->aperture->renewCertificate($account_content['id'], $hostname);
                 $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 

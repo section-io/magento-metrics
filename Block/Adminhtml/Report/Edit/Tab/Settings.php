@@ -16,6 +16,8 @@ class Settings extends Generic implements TabInterface
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    // var \Sectionio\Metrics\Helper\Data $helper
+    protected $helper;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
@@ -24,6 +26,7 @@ class Settings extends Generic implements TabInterface
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
+     * @param \Sectionio\Metrics\Helper\Data $helper
      * @param array $data
      */
     public function __construct(
@@ -33,12 +36,14 @@ class Settings extends Generic implements TabInterface
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
+        \Sectionio\Metrics\Helper\Data $helper,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
+        $this->helper = $helper;
         $this->setUseContainer(true);
     }
 
@@ -74,11 +79,11 @@ class Settings extends Generic implements TabInterface
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
-            ['legend' => __('section.io Default Account and Application')]
+            ['legend' => __('Account and Application Selection')]
         );
 
         $placeholder = $fieldset->addField('label', 'hidden', [
-            'value' => __('section.io Default Account and Application'),
+            'value' => __('Account and Application Selection'),
         ]);
 
         // only display if account credentials have been provided
@@ -86,7 +91,8 @@ class Settings extends Generic implements TabInterface
             $placeholder->setBeforeElementHtml('
                 <div class="messages">
                     <div class="message message-notice">
-                        Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
+                        Please select an account and application, once complete you\'ll be able to manage configuration and view platform metrics. For questions and assistance, visit
+                        <a href="https://community.section.io/tags/magento" target=\"_blank\">section.io community</a>.
                     </div>
                 </div>
             ');
@@ -97,9 +103,10 @@ class Settings extends Generic implements TabInterface
                 'refresh_defaults',
                 'button',
                     [
-                        'value' => __('Refresh Accounts and Applications'),
-                        'title' => __('Click here to update available accounts and applications.'),
-                        'onclick' => "setLocation('{$url}')"
+                        'value'   => __('Refresh Accounts and Applications'),
+                        'title'   => __('Update available accounts and applications.'),
+                        'onclick' => "setLocation('{$url}')",
+                        'class'   => 'action action-secondary',
                     ]
             );
             /** @var array() $accountData */
@@ -170,9 +177,50 @@ class Settings extends Generic implements TabInterface
                 'save_defaults',
                 'submit',
                 [
-                    'value' => __('Save Settings'),
-                    'class' => 'action-save action-secondary',
-                    'style' => 'width:auto'
+                    'value' => __('Update application'),
+                    'class' => 'action-save action-primary',
+                    'style' => 'width: auto'
+                ]
+            );
+
+
+            $managementFieldset = $form->addFieldset(
+                'field_fieldset_settings',
+                ['legend' => __('Management')]
+            );
+
+            //Varnish Configuration
+            $managementFieldset->addField(
+                'vcl_defaultslabel',
+                'label',
+                [
+                    'value' => __('Update Varnish Configuration with section.io. It will update and apply configuration in the production branch.'),
+                ]
+            );
+            $managementFieldset->addField(
+                'vcl_defaults',
+                'button',
+                [
+                    'value' => __('Update Varnish Configuration'),
+                    'class' => 'action action-secondary'
+                ]
+            );
+
+            //HTTPS one click
+            $hostname = $this->helper->getHostname();
+            $managementFieldset->addField(
+                'acme_defaultslabel',
+                'label',
+                [
+                    'value' => __('Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.'),
+                ]
+            );
+            $managementFieldset->addField(
+                'acme_defaults',
+                'button',
+                [
+                    'value' => __('One click HTTPS'),
+                    'class' => 'action action-secondary'
                 ]
             );
         }

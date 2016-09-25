@@ -142,6 +142,13 @@ class Credentials extends Generic implements TabInterface
             ]
         );
 
+        $fieldset = $form->addFieldset(
+            'manage_fieldset_settings',
+            ['legend' => __('section.io Account Credentials')]
+        );
+
+
+
         $this->setForm($form);
 
         return parent::_prepareForm();
