@@ -87,7 +87,7 @@ class State extends AbstractHelper
      * Get target environmentName
     */
     public function getEnvironmentName() {
-        return 'Development';
+        return 'Production';
     }
 
     /**
