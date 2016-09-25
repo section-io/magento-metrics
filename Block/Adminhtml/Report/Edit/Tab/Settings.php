@@ -217,50 +217,51 @@ class Settings extends Generic implements TabInterface
                 ]
             );
 
+            if ($this->state->getApplicationId() != null) {
+                $managementFieldset = $form->addFieldset(
+                    'field_fieldset_settings',
+                    ['legend' => __('Management')]
+                );
 
-            $managementFieldset = $form->addFieldset(
-                'field_fieldset_settings',
-                ['legend' => __('Management')]
-            );
+                //Varnish Configuration
+                $managementFieldset->addField(
+                    'vcl_lbl',
+                    'label',
+                    [
+                        'value' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the Production branch.',
+                    ]
+                );
+                $managementFieldset->addField(
+                    'vcl_btn',
+                    'submit',
+                    [
+                        'name'  => 'vcl_btn',
+                        'value' => __('Update Varnish Configuration'),
+                        'class' => 'action action-secondary',
+                        'style' => 'width: auto;'
+                    ]
+                );
 
-            //Varnish Configuration
-            $managementFieldset->addField(
-                'vcl_lbl',
-                'label',
-                [
-                    'value' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the Production branch.',
-                ]
-            );
-            $managementFieldset->addField(
-                'vcl_btn',
-                'submit',
-                [
-                    'name'  => 'vcl_btn',
-                    'value' => __('Update Varnish Configuration'),
-                    'class' => 'action action-secondary',
-                    'style' => 'width: auto;'
-                ]
-            );
-
-            //HTTPS one click
-            $hostname = $this->state->getHostname();
-            $managementFieldset->addField(
-                'certificate_lbl',
-                'label',
-                [
-                    'value' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.',
-                ]
-            );
-            $managementFieldset->addField(
-                'certificate_btn',
-                'submit',
-                [
-                    'name'  => 'certificate_btn',
-                    'value' => __('One click HTTPS'),
-                    'class' => 'action action-secondary',
-                    'style' => 'width: auto;'
-                ]
-            );
+                //HTTPS one click
+                $hostname = $this->state->getHostname();
+                $managementFieldset->addField(
+                    'certificate_lbl',
+                    'label',
+                    [
+                        'value' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain ' . $hostname . ' must be live on the internet exposed with port 80.',
+                    ]
+                );
+                $managementFieldset->addField(
+                    'certificate_btn',
+                    'submit',
+                    [
+                        'name'  => 'certificate_btn',
+                        'value' => __('One click HTTPS'),
+                        'class' => 'action action-secondary',
+                        'style' => 'width: auto;'
+                    ]
+                );
+            }
         } else {
             // no credential provided
             $pageMessages[] = [
