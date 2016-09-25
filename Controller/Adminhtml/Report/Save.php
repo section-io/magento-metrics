@@ -122,11 +122,6 @@ class Save extends Action
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
                     $this->setDefaultApplication($application_id);
-                    /** @var string $environment_name */
-                    $environment_name = $this->state->getEnvironmentName();
-                    /** Extract the generated Varnish 4 VCL code */
-                    $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
-                    $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'MagentoTurpentine');
                 }
                 else {
                     // clear default application
