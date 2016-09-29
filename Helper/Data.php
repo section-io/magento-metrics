@@ -17,7 +17,7 @@ class Data extends AbstractHelper
     protected $applicationFactory;
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
     protected $scopeConfig;
-     /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
     protected $encryptor;
     // var \Magento\Store\Model\StoreManagerInterface $storeManager
     protected $storeManager;
