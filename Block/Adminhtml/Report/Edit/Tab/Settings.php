@@ -103,8 +103,8 @@ class Settings extends Generic implements TabInterface
             ['legend' => __('Account and Application Selection')]
         );
 
-        $placeholder = $fieldset->addField('label', 'hidden', [
-            'value' => __('Account and Application Selection'),
+        $placeholder = $fieldset->addField('__placeholder', 'hidden', [
+            'value' => 'placeholder',
         ]);
 
 
