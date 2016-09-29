@@ -100,7 +100,7 @@ class Settings extends Generic implements TabInterface
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
-            ['legend' => __('Account and Application Selection')]
+            ['legend' => $this->helper->getCopy('management:application-selection:fieldset-legend', 'Account and Application Selection')]
         );
 
         $placeholder = $fieldset->addField('__placeholder', 'hidden', [

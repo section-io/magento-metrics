@@ -88,6 +88,18 @@ class Data extends AbstractHelper
         }
     }
 
+    public function getCopy($identifier, $default) {
+        $decoded = json_decode($this->getPluginConfig(), true);
+        $copy = [];
+        if (array_key_exists('copy', $decoded)) {
+            $copy = $decoded['copy'];
+        }
+        if (array_key_exists($identifier, $copy)) {
+            return $copy[$identifier];
+        }
+        return $default;
+    }
+
     /**
      * Retrieves the section.io site metrics
      *
