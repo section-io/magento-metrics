@@ -10,6 +10,8 @@ use Magento\Backend\Block\Widget\Tab\TabInterface;
 
 class Credentials extends Generic implements TabInterface
 {
+    // var \Sectionio\Metrics\Helper\Data $helper
+    protected $helper;
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
     protected $settingsFactory;
     /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
@@ -19,6 +21,7 @@ class Credentials extends Generic implements TabInterface
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
+     * @param \Sectionio\Metrics\Helper\Data $helper
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
      * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
      * @param array $data
@@ -27,11 +30,13 @@ class Credentials extends Generic implements TabInterface
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
+        \Sectionio\Metrics\Helper\Data $helper,
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
+        $this->helper = $helper;
         $this->settingsFactory = $settingsFactory;
         $this->accountFactory = $accountFactory;
         $this->setUseContainer(true);
@@ -65,30 +70,28 @@ class Credentials extends Generic implements TabInterface
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
-            ['legend' => __('section.io Account Credentials')]
+            ['legend' => $this->helper->getCopy('credentials:fieldset-legend', 'section.io Account Credentials')]
         );
 
         $placeholder = $fieldset->addField('label', 'hidden', [
-            'value' => __('section.io Account Credentials'),
+            'value' => '_placeholder',
         ]);
 
         // credentials provided
         if ($general_id = $settingsFactory->getData('general_id')) {
+            $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
             $placeholder->setBeforeElementHtml('
                 <div class="messages">
-                    <div class="message message-notice">
-                        Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
-                    </div>
+                    <div class="message message-notice">' . $copy . '</div>
                 </div>
             ');
         }
         // no credential provided
         else {
+            $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
             $placeholder->setBeforeElementHtml('
                 <div class="messages">
-                    <div class="message message-notice">
-                        Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.
-                    </div>
+                    <div class="message message-notice">' . $copy . '</div>
                 </div>
             ');
         }
@@ -136,7 +139,7 @@ class Credentials extends Generic implements TabInterface
             'save_info',
             'submit',
             [
-                'value' => __('Save Settings'),
+                'value' => $this->helper->getCopy('credentials:save-button-value', 'Save Settings'),
                 'class' => 'action-save action-secondary',
                 'style' => 'width:auto'
             ]
