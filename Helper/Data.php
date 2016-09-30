@@ -88,6 +88,8 @@ class Data extends AbstractHelper
         }
     }
 
+    // to find all the identifiers used with GetCopy, use:
+    // $ grep -ho "getCopy([\"']\([^\"']\|\\[\"']\)*" --include=*.php -r /var/www/html/app/code/Sectionio/Metrics | cut -c10-
     public function getCopy($identifier, $default) {
         $decoded = json_decode($this->getPluginConfig(), true);
         $copy = [];
