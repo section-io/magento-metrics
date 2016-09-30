@@ -17,8 +17,10 @@ class Data extends AbstractHelper
     protected $applicationFactory;
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
     protected $scopeConfig;
-     /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
+    /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
     protected $encryptor;
+    // var \Magento\Framework\Filesystem\DirectoryList $directoryList
+    protected $directoryList;
     // var \Magento\Store\Model\StoreManagerInterface $storeManager
     protected $storeManager;
 
@@ -35,6 +37,7 @@ class Data extends AbstractHelper
         \Sectionio\Metrics\Model\AccountFactory $accountFactory,
         \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        \Magento\Framework\Filesystem\DirectoryList $directoryList,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         parent::__construct($context);
@@ -43,7 +46,60 @@ class Data extends AbstractHelper
         $this->applicationFactory = $applicationFactory;
         $this->scopeConfig = $context->getScopeConfig();
         $this->encryptor = $encryptor;
+        $this->directoryList = $directoryList;
         $this->storeManager = $storeManager;
+    }
+
+    private function getPluginConfig() {
+        $cache_expiry_seconds = 60 * 60; // 1 hour
+
+        // http://blog.belvg.com/how-to-get-access-to-working-directories-in-magento-2-0.html
+        $cache_dir = $this->directoryList->getPath('cache') . '/section.io';
+        if (!is_dir($cache_dir)) {
+            mkdir($cache_dir);
+        }
+        $cached_config_file = $cache_dir . '/magento-section-io-plugin-config.json';
+
+        if (is_file($cached_config_file)) {
+            $mtime = filemtime($cached_config_file);
+            if (time() - $mtime < $cache_expiry_seconds) {
+                return file_get_contents($cached_config_file);
+            }
+        }
+
+        /** @var string $service_url */
+        $service_url = 'https://www.section.io/magento-section-io-plugin-config.json';
+
+        // setup curl call
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $service_url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_FAILONERROR, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+
+        // if response received
+        if ($curl_response = curl_exec($ch)) {
+            file_put_contents($cached_config_file, $curl_response);
+            return $curl_response;
+        }
+    }
+
+    // to find all the identifiers used with GetCopy, use:
+    // $ grep -ho "getCopy([\"']\([^\"']\|\\[\"']\)*" --include=*.php -r /var/www/html/app/code/Sectionio/Metrics | cut -c10-
+    public function getCopy($identifier, $default) {
+        $decoded = json_decode($this->getPluginConfig(), true);
+        $copy = [];
+        if (array_key_exists('copy', $decoded)) {
+            $copy = $decoded['copy'];
+        }
+        if (array_key_exists($identifier, $copy)) {
+            return $copy[$identifier];
+        }
+        return $default;
     }
 
     /**
@@ -56,27 +112,14 @@ class Data extends AbstractHelper
      */
     public function getMetrics($account_id, $application_id) {
 
-        /** @var string $service_url */
-        $initial_url = 'https://www.section.io/magento-section-io-plugin-config.json';
         /** @var array() $response */
         $response = [];
         /** @var int $count */
         $count = 0;
 
-        // setup curl call
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $initial_url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_FAILONERROR, false);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
-
         // if response received
-        if ($curl_response = curl_exec($ch)) {
-            if ($data = json_decode ($curl_response, true)) {
+        if ($plugin_config = $this->getPluginConfig()) {
+            if ($data = json_decode ($plugin_config, true)) {
                 // loop through return data
                 foreach ($data as $key => $charts) {
                     if (is_array ($charts)) {

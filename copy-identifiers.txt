@@ -1,0 +1,16 @@
+management:application-selection:fieldset-legend
+management:page-message:full-page-caching-application-not-varnish
+management:page-message:choose-account-and-application
+management:application-selection:refresh-button-value
+management:application-selection:refresh-button-title
+management:application-selection:update-button-value
+management:configure-application:fieldset-legend
+management:configure-application:vcl-explanation
+management:configure-application:vcl-button-value
+management:configure-application:lets-encrypt-explanation
+management:configure-application:lets-encrypt-button-value
+management:go-live:fieldset-legend
+management:go-live:verify-dns-explanation
+management:go-live:verify-dns-button-value
+management:go-live:aperture-button-value
+management:page-message:credentials-missing
