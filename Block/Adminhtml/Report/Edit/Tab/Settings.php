@@ -107,7 +107,6 @@ class Settings extends Generic implements TabInterface
             'value' => 'placeholder',
         ]);
 
-
         $pageMessages = [];
 
         // if Magento is configured to used FPC instead of Varnish, warn the user to change it
