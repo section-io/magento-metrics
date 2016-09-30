@@ -111,12 +111,16 @@ class Settings extends Generic implements TabInterface
 
         // if Magento is configured to used FPC instead of Varnish, warn the user to change it
         if ($this->pageCacheConfig->getType() != \Magento\PageCache\Model\Config::VARNISH) {
-            $pageMessages[] = [ 'type' => 'error', 'message' => 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="' . $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system') . '">Stores Configuration</a> '];
+            $stores_configuration_advanced_system_url = $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/system');
+            $copy = $this->helper->getCopy('management:page-message:full-page-caching-application-not-varnish', 'Magento is configured to use the built-in Full Page Cache not Varnish.  To use section.io\'s caching you need to change this option to "Varnish Cache" under the Full Page Cache settings in <a href="{stores_configuration_advanced_system_url}">Stores Configuration</a>');
+            $message = str_replace('{stores_configuration_advanced_system_url}', $stores_configuration_advanced_system_url, $copy);
+            $pageMessages[] = [ 'type' => 'error', 'message' => $message];
         }
 
         // only display if account credentials have been provided
         if ($general_id = $settingsFactory->getData('general_id')) {
-            $pageMessages[] = [ 'type' => 'notice', 'message' => 'Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here</a>.'];
+            $message = $this->helper->getCopy('management:page-message:choose-account-and-application', 'Please choose your account and application.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here</a>.');
+            $pageMessages[] = [ 'type' => 'notice', 'message' => $message];
 
             /** @var string $url */
             $url = $this->getUrl('*/*/fetchInfo');
@@ -125,8 +129,8 @@ class Settings extends Generic implements TabInterface
                 'refresh_defaults',
                 'button',
                     [
-                        'value'   => __('Refresh Accounts and Applications'),
-                        'title'   => __('Update available accounts and applications.'),
+                        'value'   => $this->helper->getCopy('management:application-selection:refresh-button-value', 'Refresh Accounts and Applications'),
+                        'title'   => $this->helper->getCopy('management:application-selection:refresh-button-title', 'Update available accounts and applications.'),
                         'onclick' => "setLocation('{$url}')",
                         'class'   => 'action action-secondary',
                     ]
@@ -199,7 +203,7 @@ class Settings extends Generic implements TabInterface
                 'save_defaults',
                 'submit',
                 [
-                    'value' => __('Update application'),
+                    'value' => $this->helper->getCopy('management:application-selection:update-button-value', 'Update application'),
                     'class' => 'action-save action-primary',
                     'style' => 'width: auto;'
                 ]
@@ -208,7 +212,7 @@ class Settings extends Generic implements TabInterface
             if ($this->state->getApplicationId() != null) {
                 $managementFieldset = $form->addFieldset(
                     'field_fieldset_management',
-                    ['legend' => __('Management')]
+                    ['legend' => $this->helper->getCopy('management:configure-application:fieldset-legend', 'Management')]
                 );
 
                 //Varnish Configuration
@@ -216,7 +220,7 @@ class Settings extends Generic implements TabInterface
                     'vcl_lbl',
                     'note',
                     [
-                        'text' => 'Update Varnish Configuration with section.io. It will update and apply configuration in the <strong>Production branch</strong>.'
+                        'text' => $this->helper->getCopy('management:configure-application:vcl-explanation', 'Update Varnish Configuration with section.io. It will update and apply configuration in the <strong>Production branch</strong>.')
                     ]
                 );
                 $managementFieldset->addField(
@@ -224,7 +228,7 @@ class Settings extends Generic implements TabInterface
                     'submit',
                     [
                         'name'  => 'vcl_btn',
-                        'value' => __('Update varnish configuration'),
+                        'value' => $this->helper->getCopy('management:configure-application:vcl-button-value', 'Update varnish configuration'),
                         'class' => 'action action-secondary',
                         'style' => 'width: auto;'
                     ]
@@ -232,11 +236,12 @@ class Settings extends Generic implements TabInterface
 
                 //HTTPS one click
                 $hostname = $this->state->getHostname();
+                $copy = $this->helper->getCopy('management:configure-application:lets-encrypt-explanation', 'Complementary one click HTTPS certificate via Let\'s Encrypt. Domain <strong>{hostname}</strong> must be exposed on the internet over port 80/HTTP.');
                 $managementFieldset->addField(
                     'certificate_lbl',
                     'note',
                     [
-                        'text' => 'Complementary one click HTTPS certificate via LetsEncrypt. Domain <strong>' . $hostname . '</strong> must be exposed on the internet over port 80/HTTP.'
+                        'text' => str_replace('{hostname}', $hostname, $copy)
                     ]
                 );
                 $managementFieldset->addField(
@@ -244,7 +249,7 @@ class Settings extends Generic implements TabInterface
                     'submit',
                     [
                         'name'  => 'certificate_btn',
-                        'value' => __('One click HTTPS'),
+                        'value' => $this->helper->getCopy('management:configure-application:lets-encrypt-button-value', 'One click HTTPS'),
                         'class' => 'action action-secondary',
                         'style' => 'width: auto;'
                     ]
@@ -252,23 +257,21 @@ class Settings extends Generic implements TabInterface
 
                 $dnsFieldset = $form->addFieldset(
                     'field_fieldset_dns',
-                    ['legend' => __('Go-live steps')]
+                    ['legend' => $this->helper->getCopy('management:go-live:fieldset-legend', 'Go-live steps')]
                 );
 
-                $domainUrl = 'https://aperture.section.io/account/'
+                $aperture_domains_url = 'https://aperture.section.io/account/'
                     . $this->state->getAccountId()
                     . '/application/'
                     . $this->state->getApplicationId()
                     . '/environment/Production/domains';
 
+                $copy = $this->helper->getCopy('management:go-live:verify-dns-explanation', 'Going live with section.io is as straightforward as changing a DNS record. <a href="{aperture_domains_url}">Visit aperture to view instructions</a> on how to complete.');
                 $dnsFieldset->addField(
                     'dns_lbl',
                     'note',
                     [
-                        'text' => '
-                            Going live with section.io is as straightforward as changing a DNS record.
-                            <a href="' . $domainUrl . '">Visit aperture to view instructions</a> on how to complete.
-                        '
+                        'text' => str_replace('{aperture_domains_url}', $aperture_domains_url, $copy)
                     ]
                 );
 
@@ -277,7 +280,7 @@ class Settings extends Generic implements TabInterface
                     'submit',
                     [
                         'name'  => 'verify_btn',
-                        'value' => __('Verify DNS change'),
+                        'value' => $this->helper->getCopy('management:go-live:verify-dns-button-value', 'Verify DNS change'),
                         'class' => 'action action-secondary',
                         'style' => 'width: auto;'
                     ]
@@ -287,10 +290,10 @@ class Settings extends Generic implements TabInterface
                     'launch_btn',
                     'button',
                     [
-                        'value' => __('Launch aperture'),
+                        'value' => $this->helper->getCopy('management:go-live:aperture-button-value', 'Launch Aperture'),
                         'class' => 'action action-secondary',
                         'style' => 'width: auto;',
-                        'onclick' => 'setLocation(\'' . $domainUrl . '\')'
+                        'onclick' => 'setLocation(\'' . $aperture_domains_url . '\')'
                     ]
                 );
             }
@@ -298,7 +301,7 @@ class Settings extends Generic implements TabInterface
             // no credential provided
             $pageMessages[] = [
                 'type' => 'error',
-                'message' => 'Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here.</a>.'
+                'message' => $this->helper->getCopy('management:page-message:credentials-missing', 'Unable to retrieve account and application data at this time.  Please reset your account credentials and try again.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target="_blank">click here.</a>.')
             ];
         }
 
