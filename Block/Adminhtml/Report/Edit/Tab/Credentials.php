@@ -112,6 +112,79 @@ class Credentials extends Generic implements TabInterface
         );
     }
 
+    private function prepareRegistrationForm($form, $settingsFactory) {
+
+        $fieldset = $form->addFieldset(
+            'edit_form_fieldset_registration',
+            ['legend' => $this->helper->getCopy('credentials:fieldset-legend', 'section.io Account Credentials')]
+        );
+
+        $placeholder = $fieldset->addField('register_label', 'hidden', [
+            'value' => '_placeholder',
+        ]);
+
+        $url = $this->getUrl('*/*/index', ['_query' => ['form' => 'login', 'tab' => 'credentials']]);
+        $copy = $this->helper->getCopy('credentials:register-page-message', 'Fill in your details to register for section.io.  If you have already registered, <a href="#loginlink">login here</a>.<br /><br />For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
+        $copy = str_replace('#loginlink', $url, $copy);
+        $placeholder->setBeforeElementHtml('
+            <div class="messages">
+                <div class="message message-notice">' . $copy . '</div>
+            </div>
+        ');
+
+        // user_name field
+        $fieldset->addField(
+            'register_email',
+            'text',
+            [
+                'name' => 'email',
+                'label' => __('Email Address'),
+                'title' => __('Email Address'),
+                'style' => 'width:75%',
+                'required' => true
+            ]
+        );
+
+        // password field
+        $password = $fieldset->addField(
+            'register_password',
+            'password',
+            [
+                'name' => 'password',
+                'label' => __('Password'),
+                'title' => __('Password'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => ''
+            ]
+        );
+
+        // confirm password field
+        $confirm_password = $fieldset->addField(
+            'register_confirm_password',
+            'password',
+            [
+                'name' => 'confirm_password',
+                'label' => __('Confirm Password'),
+                'title' => __('Confirm Password'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => ''
+            ]
+        );
+
+        // button to fetch info field
+        $fieldset->addField(
+            'register',
+            'submit',
+            [
+                'value' => $this->helper->getCopy('credentials:register-button-value', 'Register'),
+                'class' => 'action-save action-secondary',
+                'style' => 'width:auto'
+            ]
+        );
+    }
+
     /**
      * Init form
      *
@@ -138,7 +211,13 @@ class Credentials extends Generic implements TabInterface
             ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
         );
 
-        $this->prepareLoginForm($form, $settingsFactory);
+        $form_name = $this->getRequest()->getParam('form');
+
+        if ($form_name == 'register') {
+            $this->prepareRegistrationForm($form, $settingsFactory);
+        } else {
+            $this->prepareLoginForm($form, $settingsFactory);
+        }
 
         $this->setForm($form);
 
