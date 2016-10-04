@@ -42,31 +42,7 @@ class Credentials extends Generic implements TabInterface
         $this->setUseContainer(true);
     }
 
-    /**
-     * Init form
-     *
-     * @return void
-     */
-    protected function _construct()
-    {
-        parent::_construct();
-        $this->setId('edit_settings');
-        $this->setTitle(__('section.io Account Credentials'));
-    }
-
-    /**
-     * Prepare form
-     *
-     * @return $this
-     */
-    protected function _prepareForm()
-    {
-        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
-        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
-        /** @var \Magento\Framework\Data\Form $form */
-        $form = $this->_formFactory->create(
-            ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
-        );
+    private function prepareLoginForm($form, $settingsFactory) {
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
@@ -144,6 +120,35 @@ class Credentials extends Generic implements TabInterface
                 'style' => 'width:auto'
             ]
         );
+    }
+
+    /**
+     * Init form
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        parent::_construct();
+        $this->setId('edit_settings');
+        $this->setTitle(__('section.io Account Credentials'));
+    }
+
+    /**
+     * Prepare form
+     *
+     * @return $this
+     */
+    protected function _prepareForm()
+    {
+        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
+        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
+        /** @var \Magento\Framework\Data\Form $form */
+        $form = $this->_formFactory->create(
+            ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
+        );
+
+        $this->prepareLoginForm($form, $settingsFactory);
 
         $this->setForm($form);
 
