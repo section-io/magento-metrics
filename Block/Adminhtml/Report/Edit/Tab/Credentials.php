@@ -231,6 +231,13 @@ class Credentials extends Generic implements TabInterface
                 'style' => 'width:auto'
             ]
         );
+
+        $placeholder = $fieldset->addField('tandclabel', 'hidden', [
+            'value' => '_placeholder',
+        ]);
+
+        $copy = $this->helper->getCopy('credentials:termsandconditions', 'By registering you are agreeing to the <a href="https://www.section.io/legal-stuff/terms-and-conditions/" target="_blank">section.io Terms & Conditions</a>');
+        $placeholder->setBeforeElementHtml('<div class="message">' . $copy . '</div>');
     }
 
     /**
