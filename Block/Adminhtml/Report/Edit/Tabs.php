@@ -6,7 +6,7 @@
 namespace Sectionio\Metrics\Block\Adminhtml\Report\Edit;
 
 use Magento\Backend\Block\Widget\Tabs as WidgetTabs;
- 
+
 class Tabs extends WidgetTabs
 {
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
@@ -15,7 +15,7 @@ class Tabs extends WidgetTabs
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
-    
+
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
@@ -41,7 +41,7 @@ class Tabs extends WidgetTabs
         $this->accountFactory = $accountFactory;
         $this->applicationFactory = $applicationFactory;
     }
-    
+
     /**
      * @return void
      */
@@ -52,7 +52,7 @@ class Tabs extends WidgetTabs
         $this->setDestElementId('edit_form');
         $this->setTitle(__('Section.io Account Settings'));
     }
- 
+
     /**
      * @return $this
      */
@@ -69,12 +69,12 @@ class Tabs extends WidgetTabs
                 ->toHtml()
             ]
         );
-        
+
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
-        
+
         // only display if account credentials are saved
-        if ($settingsFactory->getData('general_id')) {  
+        if ($settingsFactory->getData('general_id')) {
             // account settings tab
             $this->addTab(
                 'report_edit_tabs_settings',
@@ -110,7 +110,7 @@ class Tabs extends WidgetTabs
                         'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Metrics'
                     )->toHtml()
                 ]
-            );            
+            );
         }
 
         return parent::_beforeToHtml();
