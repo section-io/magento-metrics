@@ -70,10 +70,10 @@ class Save extends Action
         if ($this->getRequest()->getParam('verify_btn') != null) {
             return $this->verifyApplication();
         }
-        return $this->saveConfiguration();
+        return $this->saveConfiguration($this->getRequest()->getParam('register'));
     }
 
-    public function saveConfiguration() {
+    public function saveConfiguration($register) {
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
@@ -82,6 +82,25 @@ class Save extends Action
         $account_id = $this->getRequest()->getParam('account_id');
         /** @var boolean $update_flag */
         $update_flag = false;
+
+        if ($register) {
+            $password = $this->getRequest()->getParam('password');
+            $confirm_password = $this->getRequest()->getParam('confirm_password');
+
+            if ($password != $confirm_password) {
+                $this->messageManager->addError(__('Password and Confirm Password must match'));
+                return $resultRedirect->setPath('*/*/index', ['_query' => ['form' => 'register', 'tab' => 'credentials']]);
+            }
+
+            $this->aperture->register(
+                $this->getRequest()->getParam('first_name'),
+                $this->getRequest()->getParam('last_name'),
+                $this->getRequest()->getParam('company'),
+                $this->getRequest()->getParam('phone'),
+                $this->getRequest()->getParam('user_name'),
+                $this->getRequest()->getParam('password'));
+        }
+
         /** @var int $general_id */
         if ($general_id = $this->getRequest()->getParam('general_id')) {
             // loads model if available

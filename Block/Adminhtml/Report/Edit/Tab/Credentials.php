@@ -132,6 +132,16 @@ class Credentials extends Generic implements TabInterface
             </div>
         ');
 
+        // general_id field (hidden)
+        $fieldset->addField(
+            'general_id',
+            'hidden',
+            [
+                'name' => 'general_id',
+                'value' => $settingsFactory->getData('general_id')
+            ]
+        );
+
         $fieldset->addField(
             'register_first_name',
             'text',
@@ -185,7 +195,7 @@ class Credentials extends Generic implements TabInterface
             'register_email',
             'text',
             [
-                'name' => 'email',
+                'name' => 'user_name',
                 'label' => __('Email Address'),
                 'title' => __('Email Address'),
                 'style' => 'width:75%',
@@ -226,6 +236,7 @@ class Credentials extends Generic implements TabInterface
             'register',
             'submit',
             [
+                'name' => 'register',
                 'value' => $this->helper->getCopy('credentials:register-button-value', 'Register'),
                 'class' => 'action-save action-secondary',
                 'style' => 'width:auto'

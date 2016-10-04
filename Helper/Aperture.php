@@ -139,6 +139,21 @@ class Aperture extends AbstractHelper
         return $this->executeAuthRequest($service_url);
     }
 
+    public function register($firstName, $lastName, $company, $phone, $email, $password) {
+        /** @var string $service_url */
+        $service_url = $this->generateUrl([
+            'uriStem'       => '/public/register'
+        ]);
+        return $this->executeAuthRequest($service_url, 'POST', [
+            'email' => $email,
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'password' => $password,
+            'companyname' => $company,
+            'phonenumber' => $phone
+        ]);
+    }
+
     /**
      * Perform Sectionio curl call
      *
