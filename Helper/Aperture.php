@@ -142,7 +142,7 @@ class Aperture extends AbstractHelper
     public function register($firstName, $lastName, $company, $phone, $email, $password) {
         /** @var string $service_url */
         $service_url = $this->generateUrl([
-            'uriStem'       => '/public/register'
+            'uriStem' => '/public/register'
         ]);
         return $this->executeAuthRequest($service_url, 'POST', [
             'email' => $email,
