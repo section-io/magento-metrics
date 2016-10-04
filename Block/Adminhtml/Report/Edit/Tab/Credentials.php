@@ -123,6 +123,9 @@ class Credentials extends Generic implements TabInterface
             'value' => '_placeholder',
         ]);
 
+        $objectManager = $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $user = $objectManager->get(\Magento\Backend\Model\Auth\Session::class)->getUser();
+
         $url = $this->getUrl('*/*/index', ['_query' => ['form' => 'login', 'tab' => 'credentials']]);
         $copy = $this->helper->getCopy('credentials:register-page-message', 'Fill in your details to register for section.io.  If you have already registered, <a href="#loginlink">login here</a>.<br /><br />For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
         $copy = str_replace('#loginlink', $url, $copy);
@@ -150,7 +153,8 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('First Name'),
                 'title' => __('First Name'),
                 'style' => 'width:75%',
-                'required' => true
+                'required' => true,
+                'value' => $user ? $user->getFirstname() : ''
             ]
         );
 
@@ -162,7 +166,8 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('Last Name'),
                 'title' => __('Last Name'),
                 'style' => 'width:75%',
-                'required' => true
+                'required' => true,
+                'value' => $user ? $user->getLastname() : ''
             ]
         );
 
@@ -199,7 +204,8 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('Email Address'),
                 'title' => __('Email Address'),
                 'style' => 'width:75%',
-                'required' => true
+                'required' => true,
+                'value' => $user ? $user->getEmail() : ''
             ]
         );
 
