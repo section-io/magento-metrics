@@ -54,23 +54,12 @@ class Credentials extends Generic implements TabInterface
         ]);
 
         // credentials provided
-        if ($general_id = $settingsFactory->getData('general_id')) {
-            $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">' . $copy . '</div>
-                </div>
-            ');
-        }
-        // no credential provided
-        else {
-            $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">' . $copy . '</div>
-                </div>
-            ');
-        }
+        $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
+        $placeholder->setBeforeElementHtml('
+            <div class="messages">
+                <div class="message message-notice">' . $copy . '</div>
+            </div>
+        ');
 
         // general_id field (hidden)
         $fieldset->addField(
