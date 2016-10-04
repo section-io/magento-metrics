@@ -132,6 +132,54 @@ class Credentials extends Generic implements TabInterface
             </div>
         ');
 
+        $fieldset->addField(
+            'register_first_name',
+            'text',
+            [
+                'name' => 'first_name',
+                'label' => __('First Name'),
+                'title' => __('First Name'),
+                'style' => 'width:75%',
+                'required' => true
+            ]
+        );
+
+        $fieldset->addField(
+            'register_last_name',
+            'text',
+            [
+                'name' => 'last_name',
+                'label' => __('Last Name'),
+                'title' => __('Last Name'),
+                'style' => 'width:75%',
+                'required' => true
+            ]
+        );
+
+        $fieldset->addField(
+            'register_company',
+            'text',
+            [
+                'name' => 'company',
+                'label' => __('Company'),
+                'title' => __('Company'),
+                'style' => 'width:75%',
+                'required' => false
+            ]
+        );
+
+        $fieldset->addField(
+            'register_phone',
+            'text',
+            [
+                'name' => 'phone',
+                'label' => __('Phone'),
+                'title' => __('Phone'),
+                'style' => 'width:75%',
+                'required' => false
+            ]
+        );
+
         // user_name field
         $fieldset->addField(
             'register_email',
