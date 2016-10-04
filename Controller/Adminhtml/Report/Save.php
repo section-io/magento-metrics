@@ -93,7 +93,15 @@ class Save extends Action
             $password = $this->getRequest()->getParam('password');
             $confirm_password = $this->getRequest()->getParam('confirm_password');
 
-            $return_query_string = ['form' => 'register', 'tab' => 'credentials'];
+            $return_query_string = [
+                'form' => 'register',
+                'tab' => 'credentials',
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'company' => $company,
+                'phone' => $phone,
+                'user_name' => $user_name
+            ];
             if ($password != $confirm_password) {
                 $this->messageManager->addError(__('Password and Confirm Password must match'));
                 return $resultRedirect->setPath('*/*/index', ['_query' => $return_query_string]);
@@ -102,7 +110,7 @@ class Save extends Action
             $result = $this->aperture->register($first_name, $last_name, $company, $phone, $user_name, $password);
 
             $result_content = json_decode ($result['body_content']);
-            if ($result_content->errors) {
+            if (isset($result_content->errors)) {
                 foreach ($result_content->errors as $error) {
                     $this->messageManager->addError(__($error));
                 }

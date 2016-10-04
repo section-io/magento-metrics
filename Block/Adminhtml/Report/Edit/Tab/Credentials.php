@@ -145,6 +145,21 @@ class Credentials extends Generic implements TabInterface
             ]
         );
 
+        $first_name = $this->getRequest()->getParam('first_name');
+        if (!$first_name && $user) {
+            $first_name = $user->getFirstname();
+        }
+
+        $last_name = $this->getRequest()->getParam('last_name');
+        if (!$last_name && $user) {
+            $last_name = $user->getLastname();
+        }
+
+        $user_name = $this->getRequest()->getParam('user_name');
+        if (!$user_name && $user) {
+            $user_name = $user->getEmail();
+        }
+
         $fieldset->addField(
             'register_first_name',
             'text',
@@ -154,7 +169,7 @@ class Credentials extends Generic implements TabInterface
                 'title' => __('First Name'),
                 'style' => 'width:75%',
                 'required' => true,
-                'value' => $user ? $user->getFirstname() : ''
+                'value' => $first_name
             ]
         );
 
@@ -167,7 +182,7 @@ class Credentials extends Generic implements TabInterface
                 'title' => __('Last Name'),
                 'style' => 'width:75%',
                 'required' => true,
-                'value' => $user ? $user->getLastname() : ''
+                'value' => $last_name
             ]
         );
 
@@ -179,7 +194,8 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('Company'),
                 'title' => __('Company'),
                 'style' => 'width:75%',
-                'required' => false
+                'required' => false,
+                'value' => $this->getRequest()->getParam('company')
             ]
         );
 
@@ -191,7 +207,8 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('Phone'),
                 'title' => __('Phone'),
                 'style' => 'width:75%',
-                'required' => false
+                'required' => false,
+                'value' => $this->getRequest()->getParam('phone')
             ]
         );
 
@@ -205,7 +222,7 @@ class Credentials extends Generic implements TabInterface
                 'title' => __('Email Address'),
                 'style' => 'width:75%',
                 'required' => true,
-                'value' => $user ? $user->getEmail() : ''
+                'value' => $user_name
             ]
         );
 
