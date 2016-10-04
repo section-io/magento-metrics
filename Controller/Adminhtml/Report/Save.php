@@ -87,18 +87,27 @@ class Save extends Action
             $password = $this->getRequest()->getParam('password');
             $confirm_password = $this->getRequest()->getParam('confirm_password');
 
+            $return_query_string = ['form' => 'register', 'tab' => 'credentials'];
             if ($password != $confirm_password) {
                 $this->messageManager->addError(__('Password and Confirm Password must match'));
-                return $resultRedirect->setPath('*/*/index', ['_query' => ['form' => 'register', 'tab' => 'credentials']]);
+                return $resultRedirect->setPath('*/*/index', ['_query' => $return_query_string]);
             }
 
-            $this->aperture->register(
+            $result = $this->aperture->register(
                 $this->getRequest()->getParam('first_name'),
                 $this->getRequest()->getParam('last_name'),
                 $this->getRequest()->getParam('company'),
                 $this->getRequest()->getParam('phone'),
                 $this->getRequest()->getParam('user_name'),
                 $this->getRequest()->getParam('password'));
+
+            $result_content = json_decode ($result['body_content']);
+            if ($result_content->errors) {
+                foreach ($result_content->errors as $error) {
+                    $this->messageManager->addError(__($error));
+                }
+                return $resultRedirect->setPath('*/*/index', ['_query' => $return_query_string]);
+            }
         }
 
         /** @var int $general_id */
