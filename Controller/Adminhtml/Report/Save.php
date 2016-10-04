@@ -84,6 +84,12 @@ class Save extends Action
         $update_flag = false;
 
         if ($register) {
+            $first_name = $this->getRequest()->getParam('first_name');
+            $last_name = $this->getRequest()->getParam('last_name');
+            $company = $this->getRequest()->getParam('company');
+            $phone = $this->getRequest()->getParam('phone');
+            $user_name = $this->getRequest()->getParam('user_name');
+
             $password = $this->getRequest()->getParam('password');
             $confirm_password = $this->getRequest()->getParam('confirm_password');
 
@@ -93,13 +99,7 @@ class Save extends Action
                 return $resultRedirect->setPath('*/*/index', ['_query' => $return_query_string]);
             }
 
-            $result = $this->aperture->register(
-                $this->getRequest()->getParam('first_name'),
-                $this->getRequest()->getParam('last_name'),
-                $this->getRequest()->getParam('company'),
-                $this->getRequest()->getParam('phone'),
-                $this->getRequest()->getParam('user_name'),
-                $this->getRequest()->getParam('password'));
+            $result = $this->aperture->register($first_name, $last_name, $company, $phone, $user_name, $password);
 
             $result_content = json_decode ($result['body_content']);
             if ($result_content->errors) {
