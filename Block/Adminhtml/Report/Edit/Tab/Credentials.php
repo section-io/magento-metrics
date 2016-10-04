@@ -53,8 +53,9 @@ class Credentials extends Generic implements TabInterface
             'value' => '_placeholder',
         ]);
 
-        // credentials provided
-        $copy = $this->helper->getCopy('credentials:login-page-message', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
+        $url = $this->getUrl('*/*/index', ['_query' => ['form' => 'register', 'tab' => 'credentials']]);
+        $copy = $this->helper->getCopy('credentials:login-page-message', 'Please enter the credentials as provided by section.io.  If you haven\'t signed up yet you can <a href="#regolink">register here</a>. <br /><br />For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
+        $copy = str_replace('#regolink', $url, $copy);
         $placeholder->setBeforeElementHtml('
             <div class="messages">
                 <div class="message message-notice">' . $copy . '</div>
