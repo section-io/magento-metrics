@@ -150,7 +150,8 @@ class Aperture extends AbstractHelper
             'lastname' => $lastName,
             'password' => $password,
             'companyname' => $company,
-            'phonenumber' => $phone
+            'phonenumber' => $phone,
+            'source' => 'magento-extension'
         ]);
     }
 
