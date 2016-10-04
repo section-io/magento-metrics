@@ -58,6 +58,8 @@ class Tabs extends WidgetTabs
      */
     protected function _beforeToHtml()
     {
+        $selected_tab = $this->getRequest()->getParam('tab');
+
         // account credentials tab
         $this->addTab(
             'report_edit_tabs_credentials',
@@ -66,7 +68,8 @@ class Tabs extends WidgetTabs
                 'title' => __('Account Credentials'),
                 'content' => $this->getLayout()->createBlock(
                     'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Credentials')
-                ->toHtml()
+                ->toHtml(),
+                'active' => $selected_tab == 'credentials'
             ]
         );
 
@@ -84,7 +87,7 @@ class Tabs extends WidgetTabs
                     'content' => $this->getLayout()->createBlock(
                         'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Settings')
                     ->toHtml(),
-                    'active' => true
+                    'active' => !$selected_tab || $selected_tab == 'settings'
                 ]
             );
         }
