@@ -207,7 +207,7 @@ class Credentials extends Generic implements TabInterface
                 'label' => __('Phone'),
                 'title' => __('Phone'),
                 'style' => 'width:75%',
-                'required' => false,
+                'required' => true,
                 'value' => $this->getRequest()->getParam('phone')
             ]
         );
