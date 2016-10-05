@@ -42,31 +42,7 @@ class Credentials extends Generic implements TabInterface
         $this->setUseContainer(true);
     }
 
-    /**
-     * Init form
-     *
-     * @return void
-     */
-    protected function _construct()
-    {
-        parent::_construct();
-        $this->setId('edit_settings');
-        $this->setTitle(__('section.io Account Credentials'));
-    }
-
-    /**
-     * Prepare form
-     *
-     * @return $this
-     */
-    protected function _prepareForm()
-    {
-        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
-        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
-        /** @var \Magento\Framework\Data\Form $form */
-        $form = $this->_formFactory->create(
-            ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
-        );
+    private function prepareLoginForm($form, $settingsFactory) {
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
@@ -77,24 +53,14 @@ class Credentials extends Generic implements TabInterface
             'value' => '_placeholder',
         ]);
 
-        // credentials provided
-        if ($general_id = $settingsFactory->getData('general_id')) {
-            $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">' . $copy . '</div>
-                </div>
-            ');
-        }
-        // no credential provided
-        else {
-            $copy = $this->helper->getCopy('credentials:page-message:credentials-exist', 'Please enter the credentials as provided by section.io.  For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
-            $placeholder->setBeforeElementHtml('
-                <div class="messages">
-                    <div class="message message-notice">' . $copy . '</div>
-                </div>
-            ');
-        }
+        $url = $this->getUrl('*/*/index', ['_query' => ['form' => 'register', 'tab' => 'credentials']]);
+        $copy = $this->helper->getCopy('credentials:login-page-message', 'Please enter the credentials as provided by section.io.  If you haven\'t signed up yet you can <a href="#regolink">register here</a>. <br /><br />For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
+        $copy = str_replace('#regolink', $url, $copy);
+        $placeholder->setBeforeElementHtml('
+            <div class="messages">
+                <div class="message message-notice">' . $copy . '</div>
+            </div>
+        ');
 
         // general_id field (hidden)
         $fieldset->addField(
@@ -144,6 +110,203 @@ class Credentials extends Generic implements TabInterface
                 'style' => 'width:auto'
             ]
         );
+    }
+
+    private function prepareRegistrationForm($form, $settingsFactory) {
+
+        $fieldset = $form->addFieldset(
+            'edit_form_fieldset_registration',
+            ['legend' => $this->helper->getCopy('credentials:fieldset-legend', 'section.io Account Credentials')]
+        );
+
+        $placeholder = $fieldset->addField('register_label', 'hidden', [
+            'value' => '_placeholder',
+        ]);
+
+        $objectManager = $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $user = $objectManager->get(\Magento\Backend\Model\Auth\Session::class)->getUser();
+
+        $url = $this->getUrl('*/*/index', ['_query' => ['form' => 'login', 'tab' => 'credentials']]);
+        $copy = $this->helper->getCopy('credentials:register-page-message', 'Fill in your details to register for section.io.  If you have already registered, <a href="#loginlink">login here</a>.<br /><br />For questions or assistance, please <a href="https://community.section.io/tags/magento" target=\"_blank\">click here</a>.');
+        $copy = str_replace('#loginlink', $url, $copy);
+        $placeholder->setBeforeElementHtml('
+            <div class="messages">
+                <div class="message message-notice">' . $copy . '</div>
+            </div>
+        ');
+
+        // general_id field (hidden)
+        $fieldset->addField(
+            'general_id',
+            'hidden',
+            [
+                'name' => 'general_id',
+                'value' => $settingsFactory->getData('general_id')
+            ]
+        );
+
+        $first_name = $this->getRequest()->getParam('first_name');
+        if (!$first_name && $user) {
+            $first_name = $user->getFirstname();
+        }
+
+        $last_name = $this->getRequest()->getParam('last_name');
+        if (!$last_name && $user) {
+            $last_name = $user->getLastname();
+        }
+
+        $user_name = $this->getRequest()->getParam('user_name');
+        if (!$user_name && $user) {
+            $user_name = $user->getEmail();
+        }
+
+        $fieldset->addField(
+            'register_first_name',
+            'text',
+            [
+                'name' => 'first_name',
+                'label' => __('First Name'),
+                'title' => __('First Name'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => $first_name
+            ]
+        );
+
+        $fieldset->addField(
+            'register_last_name',
+            'text',
+            [
+                'name' => 'last_name',
+                'label' => __('Last Name'),
+                'title' => __('Last Name'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => $last_name
+            ]
+        );
+
+        $fieldset->addField(
+            'register_company',
+            'text',
+            [
+                'name' => 'company',
+                'label' => __('Company'),
+                'title' => __('Company'),
+                'style' => 'width:75%',
+                'required' => false,
+                'value' => $this->getRequest()->getParam('company')
+            ]
+        );
+
+        $fieldset->addField(
+            'register_phone',
+            'text',
+            [
+                'name' => 'phone',
+                'label' => __('Phone'),
+                'title' => __('Phone'),
+                'style' => 'width:75%',
+                'required' => false,
+                'value' => $this->getRequest()->getParam('phone')
+            ]
+        );
+
+        // user_name field
+        $fieldset->addField(
+            'register_email',
+            'text',
+            [
+                'name' => 'user_name',
+                'label' => __('Email Address'),
+                'title' => __('Email Address'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => $user_name
+            ]
+        );
+
+        // password field
+        $password = $fieldset->addField(
+            'register_password',
+            'password',
+            [
+                'name' => 'password',
+                'label' => __('Password'),
+                'title' => __('Password'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => ''
+            ]
+        );
+
+        // confirm password field
+        $confirm_password = $fieldset->addField(
+            'register_confirm_password',
+            'password',
+            [
+                'name' => 'confirm_password',
+                'label' => __('Confirm Password'),
+                'title' => __('Confirm Password'),
+                'style' => 'width:75%',
+                'required' => true,
+                'value' => ''
+            ]
+        );
+
+        // button to fetch info field
+        $fieldset->addField(
+            'register',
+            'submit',
+            [
+                'name' => 'register',
+                'value' => $this->helper->getCopy('credentials:register-button-value', 'Register'),
+                'class' => 'action-save action-secondary',
+                'style' => 'width:auto'
+            ]
+        );
+
+        $placeholder = $fieldset->addField('tandclabel', 'hidden', [
+            'value' => '_placeholder',
+        ]);
+
+        $copy = $this->helper->getCopy('credentials:termsandconditions', 'By registering you are agreeing to the <a href="https://www.section.io/legal-stuff/terms-and-conditions/" target="_blank">section.io Terms & Conditions</a>');
+        $placeholder->setBeforeElementHtml('<div class="message">' . $copy . '</div>');
+    }
+
+    /**
+     * Init form
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        parent::_construct();
+        $this->setId('edit_settings');
+        $this->setTitle(__('section.io Account Credentials'));
+    }
+
+    /**
+     * Prepare form
+     *
+     * @return $this
+     */
+    protected function _prepareForm()
+    {
+        /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
+        $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
+        /** @var \Magento\Framework\Data\Form $form */
+        $form = $this->_formFactory->create(
+            ['data' => ['id' => 'edit_settings', 'action' => $this->getData('action'), 'method' => 'post']]
+        );
+
+        $form_name = $this->getRequest()->getParam('form');
+
+        if ($form_name == 'register') {
+            $this->prepareRegistrationForm($form, $settingsFactory);
+        } else {
+            $this->prepareLoginForm($form, $settingsFactory);
+        }
 
         $this->setForm($form);
 

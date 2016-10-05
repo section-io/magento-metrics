@@ -70,10 +70,10 @@ class Save extends Action
         if ($this->getRequest()->getParam('verify_btn') != null) {
             return $this->verifyApplication();
         }
-        return $this->saveConfiguration();
+        return $this->saveConfiguration($this->getRequest()->getParam('register'));
     }
 
-    public function saveConfiguration() {
+    public function saveConfiguration($register) {
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
@@ -82,6 +82,42 @@ class Save extends Action
         $account_id = $this->getRequest()->getParam('account_id');
         /** @var boolean $update_flag */
         $update_flag = false;
+
+        if ($register) {
+            $first_name = $this->getRequest()->getParam('first_name');
+            $last_name = $this->getRequest()->getParam('last_name');
+            $company = $this->getRequest()->getParam('company');
+            $phone = $this->getRequest()->getParam('phone');
+            $user_name = $this->getRequest()->getParam('user_name');
+
+            $password = $this->getRequest()->getParam('password');
+            $confirm_password = $this->getRequest()->getParam('confirm_password');
+
+            $return_query_string = [
+                'form' => 'register',
+                'tab' => 'credentials',
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'company' => $company,
+                'phone' => $phone,
+                'user_name' => $user_name
+            ];
+            if ($password != $confirm_password) {
+                $this->messageManager->addError(__('Password and Confirm Password must match'));
+                return $resultRedirect->setPath('*/*/index', ['_query' => $return_query_string]);
+            }
+
+            $result = $this->aperture->register($first_name, $last_name, $company, $phone, $user_name, $password);
+
+            $result_content = json_decode ($result['body_content']);
+            if (isset($result_content->errors)) {
+                foreach ($result_content->errors as $error) {
+                    $this->messageManager->addError(__($error));
+                }
+                return $resultRedirect->setPath('*/*/index', ['_query' => $return_query_string]);
+            }
+        }
+
         /** @var int $general_id */
         if ($general_id = $this->getRequest()->getParam('general_id')) {
             // loads model if available

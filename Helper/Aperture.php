@@ -139,6 +139,22 @@ class Aperture extends AbstractHelper
         return $this->executeAuthRequest($service_url);
     }
 
+    public function register($firstName, $lastName, $company, $phone, $email, $password) {
+        /** @var string $service_url */
+        $service_url = $this->generateUrl([
+            'uriStem' => '/public/register'
+        ]);
+        return $this->executeAuthRequest($service_url, 'POST', [
+            'email' => $email,
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'password' => $password,
+            'companyname' => $company,
+            'phonenumber' => $phone,
+            'source' => 'magento-extension'
+        ]);
+    }
+
     /**
      * Perform Sectionio curl call
      *
@@ -154,7 +170,6 @@ class Aperture extends AbstractHelper
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
         /** @var string $credentials */
-        $credentials = ($settingsFactory->getData('user_name') . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
 
         // setup curl call
          $ch = curl_init();
@@ -162,12 +177,17 @@ class Aperture extends AbstractHelper
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_FAILONERROR, false);
-        curl_setopt($ch, CURLOPT_USERPWD, $credentials);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        if ($username = $settingsFactory->getData('user_name')) {
+            $credentials = ($username . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
+            curl_setopt($ch, CURLOPT_USERPWD, $credentials);
+        }
+
         if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
             /** @var string $json */
@@ -183,5 +203,4 @@ class Aperture extends AbstractHelper
 
         return $curl_info;
     }
-
 }

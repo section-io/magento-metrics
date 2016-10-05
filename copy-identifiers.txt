@@ -1,7 +1,9 @@
 credentials:fieldset-legend
-credentials:page-message:credentials-exist
-credentials:page-message:credentials-exist
+credentials:login-page-message
+credentials:register-page-message
 credentials:save-button-value
+credentials:register-button-value
+credentials:termsandconditions
 management:application-selection:fieldset-legend
 management:page-message:full-page-caching-application-not-varnish
 management:page-message:choose-account-and-application
