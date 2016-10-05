@@ -1,6 +1,6 @@
 credentials:fieldset-legend
 credentials:login-page-message
-redentials:register-page-message
+credentials:register-page-message
 credentials:save-button-value
 credentials:register-button-value
 credentials:termsandconditions
