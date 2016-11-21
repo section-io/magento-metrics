@@ -1,5 +1,9 @@
 # Changes
 
+## 101.3.0
+
+* Calls to the Varnish ban API in response to `flush_varnish_pagecache` events now get batched into groups of 50 to limit the URL length
+
 ## 101.2.1
 
 * Updated versions of Magento framework dependencies
