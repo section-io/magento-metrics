@@ -8,7 +8,7 @@ class InvalidateVarnishObserver implements ObserverInterface
     /**
     * Split the tags to invalidate into batches of this size to avoid the API call URL being too long
     **/
-    const TAGS_BATCH_SIZE = 5;
+    const TAGS_BATCH_SIZE = 50;
 
     /**
      * Application config object
