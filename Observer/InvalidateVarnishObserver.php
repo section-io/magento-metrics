@@ -6,6 +6,11 @@ use Magento\Framework\Event\ObserverInterface;
 class InvalidateVarnishObserver implements ObserverInterface
 {
     /**
+    * Split the tags to invalidate into batches of this size to avoid the API call URL being too long
+    **/
+    const TAGS_BATCH_SIZE = 5;
+
+    /**
      * Application config object
      *
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -47,7 +52,10 @@ class InvalidateVarnishObserver implements ObserverInterface
                     $tags[] = sprintf($pattern, $tag);
                 }
                 if (!empty($tags)) {
-                    $this->purgeCache->sendPurgeRequest(implode('|', array_unique($tags)));
+                    $batched_tags = array_chunk(array_unique($tags), self::TAGS_BATCH_SIZE);
+                    foreach ($batched_tags as $batch) {
+                        $this->purgeCache->sendPurgeRequest(implode('|', $batch));
+                    }
                 }
             }
         }
