@@ -9,7 +9,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 
 class Aperture extends AbstractHelper
 {
-    const DEFAULT_CURL_TIMEOUT = 30;
+    const DEFAULT_CURL_TIMEOUT_SECONDS = 30;
 
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
     protected $settingsFactory;
@@ -167,7 +167,7 @@ class Aperture extends AbstractHelper
      *
      * @return array() $response
      */
-    public function executeAuthRequest ($service_url, $method = 'GET', $payload = null, $timeout = self::DEFAULT_CURL_TIMEOUT) {
+    public function executeAuthRequest ($service_url, $method = 'GET', $payload = null, $timeout = self::DEFAULT_CURL_TIMEOUT_SECONDS) {
 
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
