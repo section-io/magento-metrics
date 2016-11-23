@@ -62,7 +62,8 @@ class PurgeCache
             'uriStem'   => '/state?banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern)
         ]);
 
-        $info = $this->aperture->executeAuthRequest($uri, 'POST', []);
+        $timeout = 10;
+        $info = $this->aperture->executeAuthRequest($uri, 'POST', [], $timeout);
         if ($info['http_code'] != 200) {
             $this->logger->execute('Error executing purge: ' . $tagsPattern . ', Error Message: ' . $info['body_content']);
             return false;
