@@ -9,6 +9,8 @@ use Magento\Framework\App\Helper\AbstractHelper;
 
 class Aperture extends AbstractHelper
 {
+    const DEFAULT_CURL_TIMEOUT_SECONDS = 30;
+
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
     protected $settingsFactory;
      /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
@@ -165,7 +167,7 @@ class Aperture extends AbstractHelper
      *
      * @return array() $response
      */
-    public function executeAuthRequest ($service_url, $method = 'GET', $payload = null) {
+    public function executeAuthRequest ($service_url, $method = 'GET', $payload = null, $timeout = self::DEFAULT_CURL_TIMEOUT_SECONDS) {
 
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
@@ -180,8 +182,9 @@ class Aperture extends AbstractHelper
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_USERAGENT,'section.io-Magento-2-Extension/101.2.1');
 
         if ($username = $settingsFactory->getData('user_name')) {
             $credentials = ($username . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));

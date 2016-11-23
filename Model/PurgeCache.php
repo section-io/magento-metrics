@@ -7,6 +7,7 @@ use Magento\Framework\App\DeploymentConfig;
 class PurgeCache
 {
     const HEADER_X_MAGENTO_TAGS_PATTERN = 'X-Magento-Tags-Pattern';
+    const BAN_TIMEOUT_SECONDS = 10;
 
     /**
      * @var InvalidateLogger
@@ -59,10 +60,10 @@ class PurgeCache
             'applicationId' => $application_id,
             'environmentName' => $environment_name,
             'proxyName' => $proxy_name,
-            'uriStem'   => '/state?banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern)
+            'uriStem'   => '/state?async=true&banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern)
         ]);
 
-        $info = $this->aperture->executeAuthRequest($uri, 'POST', []);
+        $info = $this->aperture->executeAuthRequest($uri, 'POST', [], self::BAN_TIMEOUT_SECONDS);
         if ($info['http_code'] != 200) {
             $this->logger->execute('Error executing purge: ' . $tagsPattern . ', Error Message: ' . $info['body_content']);
             return false;
