@@ -60,7 +60,7 @@ class PurgeCache
             'applicationId' => $application_id,
             'environmentName' => $environment_name,
             'proxyName' => $proxy_name,
-            'uriStem'   => '/state?banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern) . '&async=true'
+            'uriStem'   => '/state?async=true&banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern)
         ]);
 
         $info = $this->aperture->executeAuthRequest($uri, 'POST', [], self::BAN_TIMEOUT_SECONDS);
