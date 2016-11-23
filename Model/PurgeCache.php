@@ -59,7 +59,7 @@ class PurgeCache
             'applicationId' => $application_id,
             'environmentName' => $environment_name,
             'proxyName' => $proxy_name,
-            'uriStem'   => '/state?banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern)
+            'uriStem'   => '/state?banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern) . '&async=true'
         ]);
 
         $timeout = 10;
