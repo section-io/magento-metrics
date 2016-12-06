@@ -56,7 +56,11 @@ class Data extends AbstractHelper
         // http://blog.belvg.com/how-to-get-access-to-working-directories-in-magento-2-0.html
         $cache_dir = $this->directoryList->getPath('cache') . '/section.io';
         if (!is_dir($cache_dir)) {
-            mkdir($cache_dir);
+            try {
+                mkdir($cache_dir);
+            } catch (Exception $e) {
+                $this->_logger->warning('Could not create cache directory. Skipping cache.', [ 'exception' => $e ]);
+            }
         }
         $cached_config_file = $cache_dir . '/magento-section-io-plugin-config.json';
 
@@ -83,7 +87,11 @@ class Data extends AbstractHelper
 
         // if response received
         if ($curl_response = curl_exec($ch)) {
-            file_put_contents($cached_config_file, $curl_response);
+            try {
+                file_put_contents($cached_config_file, $curl_response);
+            } catch (Exception $e) {
+                $this->_logger->warning('Could not write cache file. Skipping cache.', [ 'exception' => $e ]);
+            }
             return $curl_response;
         }
     }
