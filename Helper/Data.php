@@ -58,7 +58,7 @@ class Data extends AbstractHelper
         if (!is_dir($cache_dir)) {
             try {
                 mkdir($cache_dir);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->_logger->warning('Could not create cache directory. Skipping cache.', [ 'exception' => $e ]);
             }
         }
@@ -89,7 +89,7 @@ class Data extends AbstractHelper
         if ($curl_response = curl_exec($ch)) {
             try {
                 file_put_contents($cached_config_file, $curl_response);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->_logger->warning('Could not write cache file. Skipping cache.', [ 'exception' => $e ]);
             }
             return $curl_response;
