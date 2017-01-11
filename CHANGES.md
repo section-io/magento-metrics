@@ -1,5 +1,9 @@
 # Changes
 
+## 101.3.2
+
+* Log and continue if cache directory is not available. instead of silently crashing the extension when Redis has been configured as a cache.
+
 ## 101.3.1
 
 * Calls to the Varnish ban API in response to `flush_varnish_pagecache` events will be done async and have a timeout of 10 seconds
