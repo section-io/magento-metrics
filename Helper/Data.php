@@ -544,6 +544,10 @@ class Data extends AbstractHelper
     public function setDefaultApplication($application_id) {
         $applicationFactory = $this->getApplication($application_id);
 
+        if (!$applicationFactory->getId()) {
+            throw new \InvalidArgumentException('There is no application with the id ' . $application_id);
+        }
+
         if (! $applicationFactory->getData('is_active')) {
             $this->clearDefaultApplication();
             $applicationFactory->setData('is_active', '1');
