@@ -120,8 +120,16 @@ class SetupCommand extends Command
     {
         $username = $input->getArgument(self::USERNAME_ARGUMENT);
         $password = $input->getArgument(self::PASSWORD_ARGUMENT);
-        $accountid = $input->getArgument(self::ACCOUNT_ID_ARGUMENT);
-        $applicationid = $input->getArgument(self::APPLICATION_ID_ARGUMENT);
+        $account_id = filter_var($input->getArgument(self::ACCOUNT_ID_ARGUMENT), FILTER_VALIDATE_INT);
+        $application_id = filter_var($input->getArgument(self::APPLICATION_ID_ARGUMENT), FILTER_VALIDATE_INT);
+
+        if ($account_id === false) {
+            throw new \InvalidArgumentException('Argument ' . self::ACCOUNT_ID_ARGUMENT . ' must be your account id number.');
+        }
+
+        if ($application_id === false) {
+            throw new \InvalidArgumentException('Argument ' . self::APPLICATION_ID_ARGUMENT . ' must be your application id number.');
+        }
 
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
 
@@ -140,7 +148,7 @@ class SetupCommand extends Command
         $settingsFactory->save();
 
         //Refresh the account/application list
-        $this->helper->refreshApplications($this->messageManager, $accountid, $applicationid);
+        $this->helper->refreshApplications($this->messageManager, $account_id, $application_id);
         $errors = $this->messageManager->getMessages()->getErrors();
         if ($errors && count($errors) > 0) {
             foreach ($errors as $error) {
