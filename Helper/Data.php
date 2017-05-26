@@ -473,4 +473,99 @@ class Data extends AbstractHelper
         }
     }
 
+    /**
+     * Get account by accountid
+     *
+     * @param int $account_id
+     *
+     * @return \Sectionio\Metrics\Model\AccountFactory
+     */
+    public function getAccount($account_id) {
+        $collection = $this->accountFactory->create()->getCollection();
+        $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
+        return $collection->getFirstItem();
+    }
+
+    /**
+     * Set active account
+     *
+     * @param int $account_id
+     *
+     * @return void
+     */
+    public function setDefaultAccount($account_id) {
+        $accountFactory = $this->getAccount($account_id);
+
+        if (! $accountFactory->getData('is_active')) {
+            $this->clearDefaultAccount();
+            $accountFactory->setData('is_active', '1');
+            $accountFactory->save();
+        }
+    }
+
+    /**
+     * Clear default account
+     *
+     * @return void
+     */
+    public function clearDefaultAccount() {
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
+        $collection = $this->accountFactory->create()->getCollection();
+        $collection->addFieldToFilter('is_active', ['eq' => '1']);
+        /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
+        $accountFactory = $collection->getFirstItem();
+
+        if ($accountFactory->getData('id')) {
+            $accountFactory->setData('is_active', '0');
+            $accountFactory->save();
+        }
+    }
+
+    /**
+     * Get application by id
+     *
+     * @param int $application_id
+     *
+     * @return \Sectionio\Metrics\Model\ApplicationFactory
+     */
+    public function getApplication($application_id) {
+        $collection = $this->applicationFactory->create()->getCollection();
+        $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
+        return $collection->getFirstItem();
+    }
+
+    /**
+     * Set active application
+     *
+     * @param int $application_id
+     *
+     * @return void
+     */
+    public function setDefaultApplication($application_id) {
+        $applicationFactory = $this->getApplication($application_id);
+
+        if (! $applicationFactory->getData('is_active')) {
+            $this->clearDefaultApplication();
+            $applicationFactory->setData('is_active', '1');
+            $applicationFactory->save();
+        }
+    }
+
+    /**
+     * Clear default application
+     *
+     * @return void
+     */
+    public function clearDefaultApplication() {
+        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
+        $collection = $this->applicationFactory->create()->getCollection();
+        $collection->addFieldToFilter('is_active', ['eq' => '1']);
+        /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
+        $applicationFactory = $collection->getFirstItem();
+
+        if ($applicationFactory->getData('id')) {
+            $applicationFactory->setData('is_active', '0');
+            $applicationFactory->save();
+        }
+    }
 }
