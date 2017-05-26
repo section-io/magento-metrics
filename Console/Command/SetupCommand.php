@@ -123,13 +123,10 @@ class SetupCommand extends Command
         $accountid = $input->getArgument(self::ACCOUNT_ID_ARGUMENT);
         $applicationid = $input->getArgument(self::APPLICATION_ID_ARGUMENT);
 
-        $output->writeln($username . ' ' . $password);
-
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
 
         // Load existing model if available
         $general_id = $settingsFactory->getData('general_id');
-        $output->writeln('$general_id: ' . $general_id);
         if ($general_id) {
             $settingsFactory->load($general_id);
         }
