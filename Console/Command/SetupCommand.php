@@ -151,10 +151,7 @@ class SetupCommand extends Command
         $this->helper->refreshApplications($this->messageManager, $account_id, $application_id);
         $errors = $this->messageManager->getMessages()->getErrors();
         if ($errors && count($errors) > 0) {
-            foreach ($errors as $error) {
-                $output->writeln('Error: ' . $error->getText());
-            }
-            return;
+            throw new \Exception($errors[0]->getText());
         }
     }
 }
