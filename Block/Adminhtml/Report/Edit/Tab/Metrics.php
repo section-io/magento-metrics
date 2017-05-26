@@ -70,7 +70,7 @@ class Metrics extends Generic implements TabInterface
 
         /** @var array() $data */
         if ($data = $this->helper->getMetrics($account_id, $application_id)) {
-            if (isset ($data['intro'])) {
+            if (isset($data['intro'])) {
                 $intro = $form->addFieldset(
                     'edit_form_fieldset_intro',
                     []
@@ -78,13 +78,13 @@ class Metrics extends Generic implements TabInterface
                 $placeholder = $intro->addField('label', 'hidden', [
                     'value' => __('section.io Metrics'),
                 ]);
-               $placeholder->setBeforeElementHtml('
+                $placeholder->setBeforeElementHtml('
                     <div>
                         <div>' . $data['intro'] . '</div>
                     </div>
                 ');
                 $intro = $data['intro'];
-                unset ($data['intro']);
+                unset($data['intro']);
             }
 
             // loop through $data
@@ -98,14 +98,13 @@ class Metrics extends Generic implements TabInterface
                 $field[$count] = $chartFieldset[$count]->addField('sample_' . $count, 'hidden', [
                     'value' => __($chart['title']),
                 ]);
-                if (isset ($chart['apertureLink'])) {
+                if (isset($chart['apertureLink'])) {
                     $field[$count]->setAfterElementHtml('
                         <div>' . $chart['help'] . '<a href="' . $chart['docs'] . '" style="color: #FF0000" target="_blank">   Read more.</a></div><br>
                         <img src="data:image/png;base64,' . $chart['chart'] . '">' .
                         '<div><br>View this in the <a href="https://aperture.section.io/account/' . $account_id . '/application/' . $application_id . '/graphite-web" target="_blank">section.io</a> console.</div>
                     ');
-                }
-                else {
+                } else {
                     $field[$count]->setAfterElementHtml('
                         <div>' . $chart['help'] . '<a href="' . $chart['docs'] . '" style="color: #FF0000" target="_blank">   Read more.</a></div><br>
                         <img src="data:image/png;base64,' . $chart['chart'] . '">
@@ -114,8 +113,7 @@ class Metrics extends Generic implements TabInterface
                 // increment $count
                 $count ++;
             }
-        }
-        // unable to retrieve content
+        } // unable to retrieve content
         else {
             /** @var string $ectionio_url */
             $sectionio_url = 'https://aperture.section.io/';
@@ -183,5 +181,4 @@ class Metrics extends Generic implements TabInterface
     {
         return false;
     }
-
 }

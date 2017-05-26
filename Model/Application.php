@@ -21,8 +21,8 @@ class Application extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -32,5 +32,4 @@ class Application extends \Magento\Framework\Model\AbstractModel
             'Sectionio\Metrics\Model\ResourceModel\Application'
         );
     }
-
 }

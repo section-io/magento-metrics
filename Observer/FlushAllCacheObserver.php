@@ -10,12 +10,12 @@ class FlushAllCacheObserver implements ObserverInterface
      *
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $config;
+    private $config;
 
     /**
      * @var \Sectionio\Metrics\Model\PurgeCache
      */
-    protected $purgeCache;
+    private $purgeCache;
 
     /**
      * @param \Magento\PageCache\Model\Config $config
@@ -36,6 +36,7 @@ class FlushAllCacheObserver implements ObserverInterface
      * @return void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    // @codingStandardsIgnoreLine (parameter is unused but required for interface)
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if ($this->config->getType() == \Magento\PageCache\Model\Config::VARNISH && $this->config->isEnabled()) {

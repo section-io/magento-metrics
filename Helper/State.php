@@ -9,18 +9,12 @@ use Magento\Framework\App\Helper\AbstractHelper;
 
 class State extends AbstractHelper
 {
-    /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
-    protected $settingsFactory;
-    /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
-    protected $accountFactory;
-    /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
-    protected $applicationFactory;
-    /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
-    protected $scopeConfig;
-     /** @var \Magento\Framework\Encryption\EncryptorInterface $encryptor */
-    protected $encryptor;
-    // var \Magento\Store\Model\StoreManagerInterface $storeManager
-    protected $storeManager;
+    private $settingsFactory;
+    private $accountFactory;
+    private $applicationFactory;
+    private $scopeConfig;
+    private $encryptor;
+    private $storeManager;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -52,21 +46,24 @@ class State extends AbstractHelper
      * @param string $password
      *
      */
-    public function savePassword ($settingsFactory, $password) {
+    public function savePassword($settingsFactory, $password)
+    {
         $settingsFactory->setData('password', $this->encryptor->encrypt($password));
     }
 
     /**
      * Get store hostname
      */
-    public function getHostname () {
+    public function getHostname()
+    {
         return parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST);
     }
 
     /**
      * Get active accountId
-    */
-    public function getAccountId() {
+     */
+    public function getAccountId()
+    {
         return $this->accountFactory->create()->getCollection()
             ->addFieldToFilter('is_active', ['eq' => '1'])
             ->getFirstItem()
@@ -75,8 +72,9 @@ class State extends AbstractHelper
 
     /**
      * Get active applicationId
-    */
-    public function getApplicationId() {
+     */
+    public function getApplicationId()
+    {
         return $this->applicationFactory->create()->getCollection()
             ->addFieldToFilter('is_active', ['eq' => '1'])
             ->getFirstItem()
@@ -85,15 +83,17 @@ class State extends AbstractHelper
 
     /**
      * Get target environmentName
-    */
-    public function getEnvironmentName() {
+     */
+    public function getEnvironmentName()
+    {
         return 'Production';
     }
 
     /**
      * Get target proxy
-    */
-    public function getProxyName() {
+     */
+    public function getProxyName()
+    {
         return 'varnish';
     }
 }

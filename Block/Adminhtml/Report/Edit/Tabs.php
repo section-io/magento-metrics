@@ -67,7 +67,8 @@ class Tabs extends WidgetTabs
                 'label' => __('Account Credentials'),
                 'title' => __('Account Credentials'),
                 'content' => $this->getLayout()->createBlock(
-                    'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Credentials')
+                    'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Credentials'
+                )
                 ->toHtml(),
                 'active' => $selected_tab == 'credentials'
             ]
@@ -85,7 +86,8 @@ class Tabs extends WidgetTabs
                     'label' => __('Management'),
                     'title' => __('Default Account / Application'),
                     'content' => $this->getLayout()->createBlock(
-                        'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Settings')
+                        'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Settings'
+                    )
                     ->toHtml(),
                     'active' => !$selected_tab || $selected_tab == 'settings'
                 ]
@@ -105,7 +107,7 @@ class Tabs extends WidgetTabs
         // only show tab if default account_id and application_id exist
         if ($account_id and $application_id) {
             $this->addTab(
-              'report_edit_tabs_metrics',
+                'report_edit_tabs_metrics',
                 [
                     'label' => __('View Site Metrics'),
                     'title' => __('View Site Metrics'),

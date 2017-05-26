@@ -13,7 +13,7 @@ class Form extends Generic
      * @return $this
      */
     protected function _prepareForm()
-    {    
+    {
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create(
             [

@@ -61,7 +61,8 @@ class Data extends AbstractHelper
         $this->aperture = $aperture;
     }
 
-    private function getPluginConfig() {
+    private function getPluginConfig()
+    {
         $cache_expiry_seconds = 60 * 60; // 1 hour
 
         // http://blog.belvg.com/how-to-get-access-to-working-directories-in-magento-2-0.html
@@ -109,7 +110,8 @@ class Data extends AbstractHelper
 
     // to find all the identifiers used with GetCopy, use:
     // $ grep -ho "getCopy([\"']\([^\"']\|\\[\"']\)*" --include=*.php -r /var/www/html/app/code/Sectionio/Metrics | cut -c10-
-    public function getCopy($identifier, $default) {
+    public function getCopy($identifier, $default)
+    {
         $decoded = json_decode($this->getPluginConfig(), true);
         $copy = [];
         if (array_key_exists('copy', $decoded)) {
@@ -129,7 +131,8 @@ class Data extends AbstractHelper
      *
      * @return array()
      */
-    public function getMetrics($account_id, $application_id) {
+    public function getMetrics($account_id, $application_id)
+    {
 
         /** @var array() $response */
         $response = [];
@@ -138,16 +141,16 @@ class Data extends AbstractHelper
 
         // if response received
         if ($plugin_config = $this->getPluginConfig()) {
-            if ($data = json_decode ($plugin_config, true)) {
+            if ($data = json_decode($plugin_config, true)) {
                 // loop through return data
                 foreach ($data as $key => $charts) {
-                    if (is_array ($charts)) {
+                    if (is_array($charts)) {
                         // loop through each chart / graph
                         foreach ($charts as $chart) {
                             // make sure return data exists
-                            if (isset ($chart['url']) && isset ($chart['title'])) {
+                            if (isset($chart['url']) && isset($chart['title'])) {
                                 /** @var string $url */
-                                $url = str_replace ('https://aperture.section.io/account/1/application/1/', '', $chart['url']);
+                                $url = str_replace('https://aperture.section.io/account/1/application/1/', '', $chart['url']);
                                 /** @var string $service_url */
                                 $service_url = ('https://aperture.section.io/account/' . $account_id . '/application/' . $application_id . '/' . $url);
                                 // append time zone
@@ -156,20 +159,19 @@ class Data extends AbstractHelper
                                 if ($image = $this->performCurl($service_url)['body_content']) {
                                     // build return array
                                     $response[$count]['title'] = $chart['title'];
-                                    $response[$count]['chart'] = base64_encode ($image);
+                                    $response[$count]['chart'] = base64_encode($image);
                                     $response[$count]['help'] = $chart['help'];
                                     $response[$count]['docs'] = $chart['docs'];
-		                            if (isset ($chart['apertureLink'])) {
-		                                $response[$count]['apertureLink'] = $chart['apertureLink'];
-		                            }
+                                    if (isset($chart['apertureLink'])) {
+                                        $response[$count]['apertureLink'] = $chart['apertureLink'];
+                                    }
                                     // increment count
                                     $count ++;
                                 }
                             }
                         }
-                    }
-                    elseif ($key == 'intro') {
-                        if (is_string ($charts)) {
+                    } elseif ($key == 'intro') {
+                        if (is_string($charts)) {
                             $response['intro'] = $charts;
                         }
                     }
@@ -185,7 +187,8 @@ class Data extends AbstractHelper
      * @param string $password
      *
      */
-    public function savePassword ($settingsFactory, $password) {
+    public function savePassword($settingsFactory, $password)
+    {
         $settingsFactory->setData('password', $this->encryptor->encrypt($password));
     }
 
@@ -195,7 +198,8 @@ class Data extends AbstractHelper
      * @param array $parameters
      *
      */
-    public function generateApertureUrl ($parameters) {
+    public function generateApertureUrl($parameters)
+    {
         $url = 'https://aperture.section.io/api/v1';
         if (isset($parameters['accountId'])) {
             $url .= '/account/' . $parameters['accountId'];
@@ -234,7 +238,8 @@ class Data extends AbstractHelper
      *
      * @return array() $response
      */
-    public function performCurl ($service_url, $method = 'GET', $payload = null) {
+    public function performCurl($service_url, $method = 'GET', $payload = null)
+    {
 
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
@@ -277,7 +282,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function refreshApplications (&$messageManager, $account_id = null, $application_id = null) {
+    public function refreshApplications(&$messageManager, $account_id = null, $application_id = null)
+    {
 
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
         $accountFactory = $this->accountFactory->create();
@@ -349,7 +355,6 @@ class Data extends AbstractHelper
                     }
                     // perform application curl call
                     if ($applicationData = json_decode($this->performCurl($service_url)['body_content'], true)) {
-
                         //Coerce into multi-item array if single item is returned
                         if (isset($applicationData['id'])) {
                             $applicationData = [$applicationData];
@@ -370,8 +375,7 @@ class Data extends AbstractHelper
             // successful results
             $messageManager
                 ->addSuccess(__('You have successfully updated account and application data.  Please select your default account and application and save the selections.  Once complete, you will be able to view the Section.io site metrics.'));
-        }
-        // no account data
+        } // no account data
         else {
             $messageManager
                 ->addError(__('No accounts discovered.  Please check your credentials and try again.'));
@@ -387,7 +391,8 @@ class Data extends AbstractHelper
      *
      * @return int
      */
-    public function updateAccount ($general_id, $id, $account_name) {
+    public function updateAccount($general_id, $id, $account_name)
+    {
         /** @var \Sectionio\Metrics\Model\AccountFactory $model */
         $model = $this->accountFactory->create();
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
@@ -427,7 +432,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function updateApplication ($account_id, $id, $application_name) {
+    public function updateApplication($account_id, $id, $application_name)
+    {
         /** @var \Sectionio\Metrics\Model\ApplicationFactory $model */
         $model = $this->applicationFactory->create();
         /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
@@ -459,7 +465,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function cleanSettings() {
+    public function cleanSettings()
+    {
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         // delete all existing accounts
@@ -475,7 +482,8 @@ class Data extends AbstractHelper
      *
      * @return \Sectionio\Metrics\Model\AccountFactory
      */
-    public function getAccount($account_id) {
+    public function getAccount($account_id)
+    {
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
         return $collection->getFirstItem();
@@ -488,7 +496,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function setDefaultAccount($account_id) {
+    public function setDefaultAccount($account_id)
+    {
         $accountFactory = $this->getAccount($account_id);
 
         if (! $accountFactory->getData('is_active')) {
@@ -503,7 +512,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function clearDefaultAccount() {
+    public function clearDefaultAccount()
+    {
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('is_active', ['eq' => '1']);
@@ -523,7 +533,8 @@ class Data extends AbstractHelper
      *
      * @return \Sectionio\Metrics\Model\ApplicationFactory
      */
-    public function getApplication($application_id) {
+    public function getApplication($application_id)
+    {
         $collection = $this->applicationFactory->create()->getCollection();
         $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
         return $collection->getFirstItem();
@@ -536,7 +547,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function setDefaultApplication($application_id) {
+    public function setDefaultApplication($application_id)
+    {
         $applicationFactory = $this->getApplication($application_id);
 
         if (!$applicationFactory->getId()) {
@@ -555,7 +567,8 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function clearDefaultApplication() {
+    public function clearDefaultApplication()
+    {
         /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
         $collection = $this->applicationFactory->create()->getCollection();
         $collection->addFieldToFilter('is_active', ['eq' => '1']);

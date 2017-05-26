@@ -42,7 +42,8 @@ class Credentials extends Generic implements TabInterface
         $this->setUseContainer(true);
     }
 
-    private function prepareLoginForm($form, $settingsFactory) {
+    private function prepareLoginForm($form, $settingsFactory)
+    {
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_settings',
@@ -112,7 +113,8 @@ class Credentials extends Generic implements TabInterface
         );
     }
 
-    private function prepareRegistrationForm($form, $settingsFactory) {
+    private function prepareRegistrationForm($form, $settingsFactory)
+    {
 
         $fieldset = $form->addFieldset(
             'edit_form_fieldset_registration',
@@ -356,7 +358,8 @@ class Credentials extends Generic implements TabInterface
      *
      * @return string
      */
-    public function getActiveAccountByGeneralId($general_id) {
+    public function getActiveAccountByGeneralId($general_id)
+    {
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
@@ -369,5 +372,4 @@ class Credentials extends Generic implements TabInterface
         }
         return false;
     }
-
 }

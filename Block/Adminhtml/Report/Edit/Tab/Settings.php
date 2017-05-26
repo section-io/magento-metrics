@@ -128,7 +128,7 @@ class Settings extends Generic implements TabInterface
             $fieldset->addField(
                 'refresh_defaults',
                 'button',
-                    [
+                [
                         'value'   => $this->helper->getCopy('management:application-selection:refresh-button-value', 'Refresh Accounts and Applications'),
                         'title'   => $this->helper->getCopy('management:application-selection:refresh-button-title', 'Update available accounts and applications.'),
                         'onclick' => "setLocation('{$url}')",
@@ -195,7 +195,7 @@ class Settings extends Generic implements TabInterface
                         $applications[$key]->getName(),
                         $accountIdField->getName(),
                         $key
-                );
+                    );
             }
             $this->setChild('form_after', $default_map);
             // button to save default selections
@@ -364,7 +364,8 @@ class Settings extends Generic implements TabInterface
      *
      * @return array()
      */
-    public function getAccountData($general_id) {
+    public function getAccountData($general_id)
+    {
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
@@ -386,7 +387,8 @@ class Settings extends Generic implements TabInterface
      *
      * @return array()
      */
-    public function getApplicationData($account_id = NULL) {
+    public function getApplicationData($account_id = null)
+    {
 
         /** @var array() $applicationData */
         $applicationData = [];
@@ -425,7 +427,8 @@ class Settings extends Generic implements TabInterface
      *
      * @return string
      */
-    public function getActiveAccountByGeneralId($general_id) {
+    public function getActiveAccountByGeneralId($general_id)
+    {
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
         $collection = $this->accountFactory->create()->getCollection();
         $collection->addFieldToFilter('general_id', ['eq' => $general_id]);
@@ -446,7 +449,8 @@ class Settings extends Generic implements TabInterface
      *
      * @return string
      */
-    public function getActiveApplicationByAcccountId($account_id) {
+    public function getActiveApplicationByAcccountId($account_id)
+    {
         /** @var int $id */
         $id = 0;
         /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $accountCollection */

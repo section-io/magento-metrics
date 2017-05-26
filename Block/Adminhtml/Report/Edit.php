@@ -31,7 +31,7 @@ class Edit extends Container
     
     /**
      * Retrieve text for header element
-     * 
+     *
      * @return string
      */
     public function getHeaderText()
@@ -45,9 +45,9 @@ class Edit extends Container
      * @return $this
      */
     protected function _prepareLayout()
-    {   
+    {
         $this->buttonList->remove('save');
-        $this->buttonList->remove('reset'); 
+        $this->buttonList->remove('reset');
         $this->buttonList->remove('delete');
         $this->buttonList->remove('back');
         return parent::_prepareLayout();

@@ -73,7 +73,8 @@ class Save extends Action
         return $this->saveConfiguration($this->getRequest()->getParam('register'));
     }
 
-    public function saveConfiguration($register) {
+    public function saveConfiguration($register)
+    {
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
@@ -109,7 +110,7 @@ class Save extends Action
 
             $result = $this->aperture->register($first_name, $last_name, $company, $phone, $user_name, $password);
 
-            $result_content = json_decode ($result['body_content']);
+            $result_content = json_decode($result['body_content']);
             if (isset($result_content->errors)) {
                 foreach ($result_content->errors as $error) {
                     $this->messageManager->addError(__($error));
@@ -122,15 +123,14 @@ class Save extends Action
         if ($general_id = $this->getRequest()->getParam('general_id')) {
             // loads model if available
             $settingsFactory->load($general_id);
-        }
-        // new account - set update_flag
+        } // new account - set update_flag
         else {
             $update_flag = true;
         }
         // only update on change
         if ($user_name = $this->getRequest()->getParam('user_name')) {
             if ($user_name != $settingsFactory->getData('user_name')) {
-                $account_id = NULL;
+                $account_id = null;
                 $this->helper->cleanSettings();
                 $update_flag = true;
                 $settingsFactory->setData('user_name', $user_name);
@@ -139,7 +139,7 @@ class Save extends Action
         // only update on change
         if ($password = $this->getRequest()->getParam('password')) {
             if ($password != '') {
-                $account_id = NULL;
+                $account_id = null;
                 $this->helper->cleanSettings();
                 $update_flag = true;
                 $this->state->savePassword($settingsFactory, $password);
@@ -151,8 +151,7 @@ class Save extends Action
             $settingsFactory->save();
             // fetch new account and application data
             return $resultRedirect->setPath('metrics/report/fetchInfo');
-        }
-        else {
+        } else {
             // if $account_id
             if ($account_id) {
                 // set default account
@@ -161,13 +160,11 @@ class Save extends Action
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
                     $this->helper->setDefaultApplication($application_id);
-                }
-                else {
+                } else {
                     // clear default application
                     $this->helper->clearDefaultApplication();
                 }
-            }
-            else {
+            } else {
                 // clear default account and application
                 $this->helper->clearDefaultAccount();
                 $this->helper->clearDefaultApplication();
@@ -178,7 +175,8 @@ class Save extends Action
         }
     }
 
-    public function certificateChallenge() {
+    public function certificateChallenge()
+    {
         /** @var int $account_id */
         $account_id = $this->state->getAccountId();
         /** @var string $hostname */
@@ -196,7 +194,8 @@ class Save extends Action
         return $resultRedirect->setPath('metrics/report/index');
     }
 
-    public function updateVarnishConfiguration() {
+    public function updateVarnishConfiguration()
+    {
         /** @var int $account_id */
         $account_id = $this->state->getAccountId();
         /** @var int $application_id */
@@ -219,7 +218,8 @@ class Save extends Action
         return $resultRedirect->setPath('metrics/report/index');
     }
 
-    public function verifyApplication() {
+    public function verifyApplication()
+    {
         /** @var int $account_id */
         $account_id = $this->state->getAccountId();
         /** @var int $account_id */

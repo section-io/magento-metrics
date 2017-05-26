@@ -37,7 +37,8 @@ class Aperture extends AbstractHelper
      * @param array $parameters
      *
      */
-    public function generateUrl ($parameters) {
+    public function generateUrl($parameters)
+    {
         /** @var string $url */
         $url = 'https://aperture.section.io';
 
@@ -79,7 +80,8 @@ class Aperture extends AbstractHelper
      *
      * @return array() $response
      */
-    public function acmeChallenge($token, $hostname) {
+    public function acmeChallenge($token, $hostname)
+    {
         /** @var string $service_url */
         $service_url = $this->generateUrl([
             'uriStem' => sprintf('/acme/acme-challenge/%s', $token)
@@ -103,7 +105,8 @@ class Aperture extends AbstractHelper
         return $curl_info;
     }
 
-    public function renewCertificate($accountId, $hostname) {
+    public function renewCertificate($accountId, $hostname)
+    {
         /** @var string $service_url */
         $service_url = $this->generateUrl([
             'api'       => true,
@@ -114,7 +117,8 @@ class Aperture extends AbstractHelper
         return $this->executeAuthRequest($service_url, 'POST', []);
     }
 
-    public function updateProxyConfiguration($accountId, $applicationId, $environmentName, $proxyName, $content, $personality) {
+    public function updateProxyConfiguration($accountId, $applicationId, $environmentName, $proxyName, $content, $personality)
+    {
         /** @var string $service_url */
         $service_url = $this->generateUrl([
             'api'             => true,
@@ -130,7 +134,8 @@ class Aperture extends AbstractHelper
         ]);
     }
 
-    public function verifyEngaged($accountId, $applicationId) {
+    public function verifyEngaged($accountId, $applicationId)
+    {
         /** @var string $service_url */
         $service_url = $this->generateUrl([
             'api'           => true,
@@ -141,7 +146,8 @@ class Aperture extends AbstractHelper
         return $this->executeAuthRequest($service_url);
     }
 
-    public function register($firstName, $lastName, $company, $phone, $email, $password) {
+    public function register($firstName, $lastName, $company, $phone, $email, $password)
+    {
         /** @var string $service_url */
         $service_url = $this->generateUrl([
             'uriStem' => '/public/register'
@@ -167,7 +173,8 @@ class Aperture extends AbstractHelper
      *
      * @return array() $response
      */
-    public function executeAuthRequest ($service_url, $method = 'GET', $payload = null, $timeout = self::DEFAULT_CURL_TIMEOUT_SECONDS) {
+    public function executeAuthRequest($service_url, $method = 'GET', $payload = null, $timeout = self::DEFAULT_CURL_TIMEOUT_SECONDS)
+    {
 
         /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
@@ -184,7 +191,7 @@ class Aperture extends AbstractHelper
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_USERAGENT,'section.io-Magento-2-Extension/101.4.0');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'section.io-Magento-2-Extension/101.4.0');
 
         if ($username = $settingsFactory->getData('user_name')) {
             $credentials = ($username . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));

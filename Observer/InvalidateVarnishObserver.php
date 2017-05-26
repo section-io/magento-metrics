@@ -15,12 +15,12 @@ class InvalidateVarnishObserver implements ObserverInterface
      *
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $config;
+    private $config;
 
     /**
      * @var \Sectionio\Metrics\Model\PurgeCache
      */
-    protected $purgeCache;
+    private $purgeCache;
 
     /**
      * @param \Magento\PageCache\Model\Config $config

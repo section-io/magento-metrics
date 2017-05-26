@@ -14,8 +14,8 @@ class Account extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         $resourcePrefix = null
-    )
-    {
+    ) {
+    
         $this->transactionManager = $context->getTransactionManager();
         $this->_resources = $context->getResources();
         $this->objectRelationProcessor = $context->getObjectRelationProcessor();
@@ -32,5 +32,4 @@ class Account extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             'id'
         );
     }
-
 }

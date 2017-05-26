@@ -31,7 +31,7 @@ class Index extends Action
      */
     public function execute()
     {
-        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */      
+        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Sectionio_Metrics::metrics_report');
         $resultPage->getConfig()->getTitle()->prepend(__('section.io Site Metrics'));
