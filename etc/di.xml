@@ -10,6 +10,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="setup_command" xsi:type="object">Sectionio\Metrics\Console\Command\SetupCommand</item>
+                <item name="updatevcl_command" xsi:type="object">Sectionio\Metrics\Console\Command\UpdateVclCommand</item>
             </argument>
         </arguments>
     </type>
