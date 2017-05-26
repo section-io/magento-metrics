@@ -27,8 +27,6 @@ class Data extends AbstractHelper
     protected $state;
     /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
     protected $aperture;
-    /** @var \Psr\Log\LoggerInterface $logger */
-    protected $logger;
 
 
     /**
@@ -39,7 +37,6 @@ class Data extends AbstractHelper
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * @param \Sectionio\Metrics\Helper\State $state
      * @param \Sectionio\Metrics\Helper\Aperture $aperture
-     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -50,8 +47,7 @@ class Data extends AbstractHelper
         \Magento\Framework\Filesystem\DirectoryList $directoryList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Sectionio\Metrics\Helper\State $state,
-        \Sectionio\Metrics\Helper\Aperture $aperture,
-        \Psr\Log\LoggerInterface $logger
+        \Sectionio\Metrics\Helper\Aperture $aperture
     ) {
         parent::__construct($context);
         $this->settingsFactory = $settingsFactory;
@@ -63,7 +59,6 @@ class Data extends AbstractHelper
         $this->storeManager = $storeManager;
         $this->state = $state;
         $this->aperture = $aperture;
-        $this->logger = $logger;
     }
 
     private function getPluginConfig() {
@@ -298,7 +293,7 @@ class Data extends AbstractHelper
         $this->cleanSettings();
         // perform account curl call
         $curl_response = $this->performCurl($service_url);
-        $this->logger->debug(print_r($service_url, true));
+        $this->_logger->debug(print_r($service_url, true));
         if ($curl_response['http_code'] == 200) {
             $accountData = json_decode($curl_response['body_content'], true);
 
@@ -328,9 +323,9 @@ class Data extends AbstractHelper
                 }
                 $accountData[] = $account_content;
 
-                $this->logger->info('Retrieving certificate started for ' . $hostname);
+                $this->_logger->info('Retrieving certificate started for ' . $hostname);
                 $certificate_response = $this->aperture->renewCertificate($account_content['id'], $hostname);
-                $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
+                $this->_logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 
             // Coerce into a multi-item array if it isn't one
