@@ -7,6 +7,6 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../../../../../../htdocs/lib/internal/Magento/Framework/Module/etc/module.xsd">
-    <module name="Sectionio_Metrics" schema_version="100.0.0" setup_version="100.0.0">
+    <module name="Sectionio_Metrics" schema_version="100.0.0" setup_version="101.4.0">
     </module>
 </config>
