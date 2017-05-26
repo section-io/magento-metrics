@@ -30,23 +30,17 @@ class SetupCommand extends Command
     /**
      * Account ID argument
      */
-    const ACCOUNT_ID_ARGUMENT = 'accountid';
+    const ACCOUNT_ID_ARGUMENT = 'account_id';
 
     /**
      * Application ID argument
      */
-    const APPLICATION_ID_ARGUMENT = 'applicationid';
+    const APPLICATION_ID_ARGUMENT = 'application_id';
 
     /** @var \Sectionio\Metrics\Model\SettingsFactory $settingsFactory */
     protected $settingsFactory;
-    /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
-    protected $accountFactory;
-    /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
-    protected $applicationFactory;
     /** @var \Sectionio\Metrics\Helper\Data $helper */
     protected $helper;
-    /** @var \Sectionio\Metrics\Helper\Aperture $aperture */
-    protected $aperture;
     /** @var \Magento\Framework\Message\ManagerInterface $messageManager **/
     protected $messageManager;
     /** @var \Magento\Framework\App\State $state **/
@@ -54,27 +48,18 @@ class SetupCommand extends Command
 
     /**
      * @param \Sectionio\Metrics\Model\SettingsFactory $settingsFactory
-     * @param \Sectionio\Metrics\Model\AccountFactory $accountFactory
-     * @param \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory
      * @param \Sectionio\Metrics\Helper\Data $helper
-     * @param \Sectionio\Metrics\Helper\Aperture $aperture
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Framework\App\State $state
      */
     public function __construct(
         \Sectionio\Metrics\Model\SettingsFactory $settingsFactory,
-        \Sectionio\Metrics\Model\AccountFactory $accountFactory,
-        \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory,
         \Sectionio\Metrics\Helper\Data $helper,
-        \Sectionio\Metrics\Helper\Aperture $aperture,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\App\State $state
     ) {
         parent::__construct();
         $this->settingsFactory = $settingsFactory;
-        $this->accountFactory = $accountFactory;
-        $this->applicationFactory = $applicationFactory;
-        $this->aperture = $aperture;
         $this->helper = $helper;
         $this->messageManager = $messageManager;
         $state->setAreaCode('adminhtml');
@@ -86,7 +71,7 @@ class SetupCommand extends Command
     protected function configure()
     {
         $this->setName('sectionio:setup')
-            ->setDescription('Greeting command')
+            ->setDescription('Setup the section.io module with your account details')
             ->setDefinition([
                 new InputArgument(
                     self::USERNAME_ARGUMENT,
