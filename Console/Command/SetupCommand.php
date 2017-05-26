@@ -153,5 +153,8 @@ class SetupCommand extends Command
         if ($errors && count($errors) > 0) {
             throw new \Exception($errors[0]->getText());
         }
+
+        $this->helper->setDefaultAccount($account_id);
+        $this->helper->setDefaultApplication($application_id);
     }
 }
