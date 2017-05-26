@@ -131,7 +131,7 @@ class Save extends Action
         if ($user_name = $this->getRequest()->getParam('user_name')) {
             if ($user_name != $settingsFactory->getData('user_name')) {
                 $account_id = NULL;
-                $this->cleanSettings();
+                $this->helper->cleanSettings();
                 $update_flag = true;
                 $settingsFactory->setData('user_name', $user_name);
             }
@@ -140,7 +140,7 @@ class Save extends Action
         if ($password = $this->getRequest()->getParam('password')) {
             if ($password != '') {
                 $account_id = NULL;
-                $this->cleanSettings();
+                $this->helper->cleanSettings();
                 $update_flag = true;
                 $this->state->savePassword($settingsFactory, $password);
             }
@@ -156,21 +156,21 @@ class Save extends Action
             // if $account_id
             if ($account_id) {
                 // set default account
-                $this->setDefaultAccount($account_id);
+                $this->helper->setDefaultAccount($account_id);
                 // if exists
                 if ($application_id = $this->getRequest()->getParam('application_id' . $account_id)) {
                     // set default application
-                    $this->setDefaultApplication($application_id);
+                    $this->helper->setDefaultApplication($application_id);
                 }
                 else {
                     // clear default application
-                    $this->clearDefaultApplication();
+                    $this->helper->clearDefaultApplication();
                 }
             }
             else {
                 // clear default account and application
-                $this->clearDefaultAccount();
-                $this->clearDefaultApplication();
+                $this->helper->clearDefaultAccount();
+                $this->helper->clearDefaultApplication();
             }
             $this->messageManager
                 ->addSuccess(__('You have successfully updated the account information.'));
@@ -242,97 +242,5 @@ class Save extends Action
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         return $resultRedirect->setPath('metrics/report/index');
-    }
-
-    /**
-     * Set active account
-     *
-     * @param int $account_id
-     *
-     * @return void
-     */
-    public function setDefaultAccount($account_id) {
-        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
-        $collection = $this->accountFactory->create()->getCollection();
-        $collection->addFieldToFilter('account_id', ['eq' => $account_id]);
-        /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
-        $accountFactory = $collection->getFirstItem();
-
-        if (! $accountFactory->getData('is_active')) {
-            $this->clearDefaultAccount();
-            $accountFactory->setData('is_active', '1');
-            $accountFactory->save();
-        }
-    }
-
-    /**
-     * Clear default account
-     *
-     * @return void
-     */
-    public function clearDefaultAccount() {
-        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
-        $collection = $this->accountFactory->create()->getCollection();
-        $collection->addFieldToFilter('is_active', ['eq' => '1']);
-        /** @var \Sectionio\Metrics\Model\AccountFactory $accountFactory */
-        $accountFactory = $collection->getFirstItem();
-
-        if ($accountFactory->getData('id')) {
-            $accountFactory->setData('is_active', '0');
-            $accountFactory->save();
-        }
-    }
-
-    /**
-     * Set active application
-     *
-     * @param int $application_id
-     *
-     * @return void
-     */
-    public function setDefaultApplication($application_id) {
-        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
-        $collection = $this->applicationFactory->create()->getCollection();
-        $collection->addFieldToFilter('application_id', ['eq' => $application_id]);
-        /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
-        $applicationFactory = $collection->getFirstItem();
-
-        if (! $applicationFactory->getData('is_active')) {
-            $this->clearDefaultApplication();
-            $applicationFactory->setData('is_active', '1');
-            $applicationFactory->save();
-        }
-    }
-
-    /**
-     * Clear default application
-     *
-     * @return void
-     */
-    public function clearDefaultApplication() {
-        /** @var \Sectionio\Metrics\Model\ResourceModel\Application\Collection $collection */
-        $collection = $this->applicationFactory->create()->getCollection();
-        $collection->addFieldToFilter('is_active', ['eq' => '1']);
-        /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
-        $applicationFactory = $collection->getFirstItem();
-
-        if ($applicationFactory->getData('id')) {
-            $applicationFactory->setData('is_active', '0');
-            $applicationFactory->save();
-        }
-    }
-
-    /**
-     * Clean current accounts (new credentials detected)
-     *
-     * @return void
-     */
-    public function cleanSettings() {
-        /** @var \Sectionio\Metrics\Model\ResourceModel\Account\Collection $collection */
-        $collection = $this->accountFactory->create()->getCollection();
-        // delete all existing accounts
-        foreach ($collection as $model) {
-            $model->delete();
-        }
     }
 }

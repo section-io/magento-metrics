@@ -1,5 +1,10 @@
 # Changes
 
+## 101.4.0
+
+* Add CLI command for setting up section.io
+* Add CLI command for pushing Magento VCL to section.io Varnish
+
 ## 101.3.2
 
 * Log and continue if cache directory is not available. instead of silently crashing the extension when Redis has been configured as a cache.
