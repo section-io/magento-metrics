@@ -282,14 +282,18 @@ class Data extends AbstractHelper
      *
      * @return void
      */
-    public function refreshApplications (&$messageManager, $account_id, $application_id) {
+    public function refreshApplications (&$messageManager, $account_id = null, $application_id = null) {
 
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
         $accountFactory = $this->accountFactory->create();
         $general_id = $settingsFactory->getData('general_id');
+        $service_url;
+        if (!$account_id && !$application_id) {
+            $service_url = $this->generateApertureUrl(['uriStem' => '/account']);
+        } else {
+            $service_url = $this->generateApertureUrl(['accountId' => $account_id]);
+        }
 
-
-        $service_url = $this->generateApertureUrl(['uriStem' => '/account']);
         // remove the existing accounts
         $this->cleanSettings();
         // perform account curl call
@@ -329,6 +333,11 @@ class Data extends AbstractHelper
                 $this->logger->info('Retrieving certificate finished for ' . $hostname . '  with result ' . $certificate_response['http_code']);
             }
 
+            // Coerce into a multi-item array if it isn't one
+            if (isset($accountData['id'])) {
+                $accountData = [$accountData];
+            }
+
             // loop through accounts discovered
             foreach ($accountData as $account) {
                 /** @var int $id */
@@ -338,9 +347,19 @@ class Data extends AbstractHelper
                 /** @var int $account_id */
                 if ($account_id = $this->updateAccount($general_id, $id, $account_name)) {
                     /** @var string $service_url */
-                    $service_url = $this->generateApertureUrl(['accountId' => $id, 'uriStem' => '/application']);
+                    if (!$application_id) {
+                        $service_url = $this->generateApertureUrl(['accountId' => $id, 'uriStem' => '/application']);
+                    } else {
+                        $service_url = $this->generateApertureUrl(['accountId' => $id, 'applicationId' => $application_id]);
+                    }
                     // perform application curl call
                     if ($applicationData = json_decode($this->performCurl($service_url)['body_content'], true)) {
+
+                        //Coerce into multi-item array if single item is returned
+                        if (isset($applicationData['id'])) {
+                            $applicationData = [$applicationData];
+                        }
+
                         // loop through available applications
                         foreach ($applicationData as $application) {
                             /** @var int $application_id */

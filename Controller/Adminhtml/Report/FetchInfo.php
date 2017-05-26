@@ -34,7 +34,7 @@ class FetchInfo extends Action
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        $this->helper->refreshApplications($this->messageManager, null, null);
+        $this->helper->refreshApplications($this->messageManager);
 
         return $resultRedirect->setPath('metrics/report/index');
     }
