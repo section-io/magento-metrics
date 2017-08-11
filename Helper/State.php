@@ -12,7 +12,7 @@ class State extends AbstractHelper
     private $settingsFactory;
     private $accountFactory;
     private $applicationFactory;
-    private $scopeConfig;
+    protected $scopeConfig;
     private $encryptor;
     private $storeManager;
 

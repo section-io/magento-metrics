@@ -62,7 +62,7 @@ class SetupCommand extends Command
         $this->settingsFactory = $settingsFactory;
         $this->helper = $helper;
         $this->messageManager = $messageManager;
-        $state->setAreaCode('adminhtml');
+        $this->state = $state;
     }
 
     /**
@@ -116,6 +116,7 @@ class SetupCommand extends Command
             throw new \InvalidArgumentException('Argument ' . self::APPLICATION_ID_ARGUMENT . ' must be your application id number.');
         }
 
+        $this->state->setAreaCode('adminhtml');
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
 
         // Load existing model if available
