@@ -1,5 +1,9 @@
 # Changes
 
+## 101.4.1
+
+* Move setAreaCode into execute to avoid conflict with other commands
+
 ## 101.4.0
 
 * Add CLI command for setting up section.io
