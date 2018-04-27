@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Section.io. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="system">
+            <group id="full_page_cache">
+                <group id="sectionio" translate="label" showInDefault="1" showInWebsite="0" showInStore="0" sortOrder="700">
+                    <label>section.io Settings</label>
+                    <field id="include_cms_in_product_purge" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Include CMS Pages in product purges</label>
+                        <comment>If set to No, CMS pages will not be purged when a product is updated, even if that product is displayed on the page. CMS pages will still be purged if their content is updated.</comment>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>

@@ -14,6 +14,13 @@ class PurgeCache
      */
     private $logger;
 
+    /**
+     * Application config object
+     *
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    private $config;
+
     /** @var \Sectionio\Metrics\Helper\State $helper */
     protected $state;
 
@@ -27,15 +34,18 @@ class PurgeCache
      * Constructor
      *
      * @param InvalidateLogger $logger
+     * @param \Sectionio\Metrics\Model\Config $config
      * @param \Sectionio\Metrics\Helper\State $state
      * @param \Sectionio\Metrics\Helper\Aperture $aperture
      */
     public function __construct(
         InvalidateLogger $logger,
+        \Sectionio\Metrics\Model\Config $config,
         \Sectionio\Metrics\Helper\State $state,
         \Sectionio\Metrics\Helper\Aperture $aperture
     ) {
         $this->logger = $logger;
+        $this->config = $config;
         $this->state = $state;
         $this->aperture = $aperture;
     }
@@ -54,13 +64,20 @@ class PurgeCache
         $environment_name = $this->state->getEnvironmentName();
         $proxy_name = $this->state->getProxyName();
 
+        $banExpression = urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern);
+
+        // If this ban contains product tags & includeCmsInProductPurge is false, exclude any object that also has a CMS Page tag
+        if (!$this->config->includeCmsInProductPurge() && strpos($tagsPattern, \Magento\Catalog\Model\Product::CACHE_TAG) !== false) {
+            $banExpression .= urlencode(' && obj.http.X-Magento-Tags !~ (^|,)'.\Magento\Cms\Model\Page::CACHE_TAG.'_[0-9]+');
+        }
+
         $uri = $this->aperture->generateUrl([
             'api' => true,
             'accountId' => $account_id,
             'applicationId' => $application_id,
             'environmentName' => $environment_name,
             'proxyName' => $proxy_name,
-            'uriStem'   => '/state?async=true&banExpression=' . urlencode('obj.http.X-Magento-Tags ~ ' . $tagsPattern)
+            'uriStem'   => '/state?async=true&banExpression=' . $banExpression
         ]);
 
         $info = $this->aperture->executeAuthRequest($uri, 'POST', [], self::BAN_TIMEOUT_SECONDS);
@@ -68,7 +85,8 @@ class PurgeCache
             $this->logger->execute('Error executing purge: ' . $tagsPattern.', Error: ' . $info['body_content']);
             return false;
         }
-        $this->logger->execute(compact('server', 'tagsPattern'));
+        //$this->logger->execute(compact('server', 'tagsPattern'));
         return true;
     }
 }
+

@@ -1,0 +1,11 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <system>
+            <full_page_cache>
+                <sectionio>
+                    <include_cms_in_product_purge>1</include_cms_in_product_purge>
+                </sectionio>
+            </full_page_cache>
+        </system>
+    </default>
+</config>
