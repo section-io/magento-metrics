@@ -1,12 +1,12 @@
 <?php
 /**
- * Copyright © 2016 Sectionio. All rights reserved.
+ * Copyright © 2018 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Sectionio\Metrics\Block\Adminhtml\Report\Edit;
- 
+
 use Magento\Backend\Block\Widget\Form\Generic;
- 
+
 class Form extends Generic
 {
     /**
@@ -26,7 +26,7 @@ class Form extends Generic
         );
         $form->setUseContainer(true);
         $this->setForm($form);
- 
+
         return parent::_prepareForm();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Sectionio. All rights reserved.
+ * Copyright © 2018 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Sectionio\Metrics\Model\ResourceModel\Account;

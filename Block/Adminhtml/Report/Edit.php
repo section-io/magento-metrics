@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Sectionio. All rights reserved.
+ * Copyright © 2018 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Sectionio\Metrics\Block\Adminhtml\Report;
@@ -19,7 +19,7 @@ class Edit extends Container
     ) {
         parent::__construct($context, $data);
     }
-    
+
     protected function _construct()
     {
         $this->_objectId = 'general_id';
@@ -28,7 +28,7 @@ class Edit extends Container
 
         parent::_construct();
     }
-    
+
     /**
      * Retrieve text for header element
      *
