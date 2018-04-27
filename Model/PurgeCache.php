@@ -85,7 +85,6 @@ class PurgeCache
             $this->logger->execute('Error executing purge: ' . $tagsPattern.', Error: ' . $info['body_content']);
             return false;
         }
-        //$this->logger->execute(compact('server', 'tagsPattern'));
         return true;
     }
 }
