@@ -60,7 +60,8 @@ class UpdateVclCommand extends Command
         $application_id = $this->state->getApplicationId();
         $environment_name = $this->state->getEnvironmentName();
         $proxy_name = $this->state->getProxyName();
-         error_log(print_r($proxy_name, TRUE),0);
+        $output->writeln('Proxy Name is ' . $proxy_name);
+
         if (!$account_id) {
             throw new \Exception('account_id has not been set, please run sectionio:setup');
         }
