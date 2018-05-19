@@ -204,7 +204,7 @@ class Save extends Action
         $environment_name = $this->state->getEnvironmentName();
 
         /** Extract the generated Varnish 4 VCL code */
-        $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
         $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'MagentoTurpentine');
 
         if ($result['http_code'] == 200) {
