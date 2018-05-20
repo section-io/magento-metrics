@@ -580,4 +580,16 @@ class Data extends AbstractHelper
             $applicationFactory->save();
         }
     }
+
+    public function getProxyImage($account_id, $application_id)
+    {
+        $parameters = array("accountId"=>$account_id, "applicationId"=>$application_id, "environmentName"=>"Production");
+        $url = $this->generateApertureUrl($parameters);
+        $json_response = $this->performCurl($url);
+        /** return response as an associative array */
+        $response = json_decode($json_response);
+        /** grab the proxy image */
+        $full_image = $response[0]->image;
+        return explode(".", $full_image)[0];
+    }
 }
