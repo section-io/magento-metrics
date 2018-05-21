@@ -202,9 +202,16 @@ class Save extends Action
         $application_id = $this->state->getApplicationId();
         /** @var string $environment_name */
         $environment_name = $this->state->getEnvironmentName();
+        /** @var string $proxy_image*/
+        $proxy_image = $this->helper->getProxyImage($account_id, $application_id);
 
-        /** Extract the generated Varnish 4 VCL code */
-        $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        /** Extract the generated VCL code appropriate for their version*/
+        if (strpos($proxy_image, "4" !== false)){
+            $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        } else {
+            $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
+        }
+
         $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'MagentoTurpentine');
 
         if ($result['http_code'] == 200) {
