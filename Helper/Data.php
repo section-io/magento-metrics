@@ -585,9 +585,9 @@ class Data extends AbstractHelper
     {
         $parameters = array("accountId"=>$account_id, "applicationId"=>$application_id, "environmentName"=>"Production");
         $url = $this->generateApertureUrl($parameters);
-        $response = $this->performCurl($url);
+        $curl_response = $this->performCurl($url);
         /** return response as an associative array */
-        /** $response = json_decode($json_response); */
+        $response = json_decode($curl_response['body_content'], true);
         /** find object with name=varnish  */
         $image;
         foreach($response as $proxy){
