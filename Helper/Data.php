@@ -588,8 +588,13 @@ class Data extends AbstractHelper
         $json_response = $this->performCurl($url);
         /** return response as an associative array */
         $response = json_decode($json_response);
-        /** grab the proxy image */
-        $full_image = $response[0]->image;
-        return explode(".", $full_image)[0];
+        /** find object with name=varnish  */
+        $image;
+        foreach($response as $proxy){
+            if ($proxy->name == "varnish") { 
+                $image = $proxy->image;
+            }
+        }
+        return explode(".", $image)[0];
     }
 }

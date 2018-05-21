@@ -203,7 +203,7 @@ class Save extends Action
         /** @var string $environment_name */
         $environment_name = $this->state->getEnvironmentName();
         /** @var string $proxy_image*/
-        $proxy_image = $this->data->getProxyImage($account_id, $application_id);
+        $proxy_image = $this->helper->getProxyImage($account_id, $application_id);
 
         /** Extract the generated VCL code appropriate for their version*/
         if (strpos($proxy_image, "4" !== false)){
