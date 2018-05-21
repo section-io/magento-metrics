@@ -581,7 +581,8 @@ class Data extends AbstractHelper
         }
     }
 
-    public function getProxyImage($account_id, $application_id)
+    /** get complete proxy image version for a given environment from aperture. */
+    public function getProxyVersion($account_id, $application_id)
     {
         /**generateApertureUrl takes an associative array */
         $parameters = array("accountId"=>$account_id, "applicationId"=>$application_id, "environmentName"=>"Production");
@@ -601,6 +602,13 @@ class Data extends AbstractHelper
                 $image = $proxy['image'];
             }
         }
-        return explode(".", $image)[0];
+        /** returns only the version ie "5.2.1" */
+        return explode(":", $image)[1];
+    }
+
+    /** takes a full version like "5.2.1" and returns the major release (5) */
+    public function getMajorRelease($full_release)
+    {
+        return explode(".", $full_release)[1];
     }
 }

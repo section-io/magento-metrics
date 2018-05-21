@@ -66,7 +66,7 @@ class UpdateVclCommand extends Command
         $environment_name = $this->state->getEnvironmentName();
         $proxy_name = $this->state->getProxyName();
         /** @var string $proxy_image*/
-        $proxy_image = $this->helper->getProxyImage($account_id, $application_id);
+        $proxy_version = $this->helper->getProxyVersion($account_id, $application_id);
 
         if (!$account_id) {
             throw new \Exception('account_id has not been set, please run sectionio:setup');
@@ -84,8 +84,10 @@ class UpdateVclCommand extends Command
             throw new \Exception('proxy_name has not been set, please run sectionio:setup');
         }
 
+        $major_release = $this->helper->getMajorRelease($proxy_version);
+
         /** Extract the generated VCL code appropriate for their version*/
-        if (strpos($proxy_image, "4" !== false)){
+        if ($major_release == "4" ){
             $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
         } else {
             $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
