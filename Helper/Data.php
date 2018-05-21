@@ -609,6 +609,6 @@ class Data extends AbstractHelper
     /** takes a full version like "5.2.1" and returns the major release (5) */
     public function getMajorRelease($full_release)
     {
-        return explode(".", $full_release)[1];
+        return explode(".", $full_release)[0];
     }
 }
