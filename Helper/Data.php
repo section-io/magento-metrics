@@ -591,8 +591,8 @@ class Data extends AbstractHelper
         /** find object with name=varnish  */
         $image;
         foreach($response as $proxy){
-            if ($proxy->name == "varnish") { 
-                $image = $proxy->image;
+            if ($proxy["name"] == "varnish") { 
+                $image = $proxy["image"];
             }
         }
         return explode(".", $image)[0];
