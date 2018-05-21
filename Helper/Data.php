@@ -594,7 +594,7 @@ class Data extends AbstractHelper
         /** return response as an associative array */
         $response = json_decode($curl_response['body_content'], true);
 
-        /** find object with name=varnish, grab the image  */
+        /** find element with name=varnish, grab the image  */
         $image;
         foreach($response as $proxy){
             if ($proxy['name'] == 'varnish') { 
