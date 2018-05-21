@@ -96,9 +96,4 @@ class State extends AbstractHelper
     {
         return 'varnish';
     }
-
-    public function getProxyImage()
-    {
-        
-    }
 }
