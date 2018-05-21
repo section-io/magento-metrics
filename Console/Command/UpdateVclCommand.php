@@ -29,17 +29,20 @@ class UpdateVclCommand extends Command
     /**
      * @param \Sectionio\Metrics\Helper\Aperture $aperture
      * @param \Sectionio\Metrics\Helper\State $state
+     * @param \Sectionio\Metrics\Helper\Data $helper
      * @param \Magento\PageCache\Model\Config $pageCacheConfig
      */
     public function __construct(
         \Sectionio\Metrics\Helper\Aperture $aperture,
         \Sectionio\Metrics\Helper\State $state,
+        \Sectionio\Metrics\Helper\Data $helper,
         \Magento\PageCache\Model\Config $pageCacheConfig
     ) {
         parent::__construct();
         $this->aperture = $aperture;
         $this->state = $state;
         $this->pageCacheConfig = $pageCacheConfig;
+        $this->helper = $helper
     }
 
     /**
