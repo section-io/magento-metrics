@@ -584,10 +584,11 @@ class Data extends AbstractHelper
     public function getProxyImage($account_id, $application_id)
     {
         $parameters = array("accountId"=>$account_id, "applicationId"=>$application_id, "environmentName"=>"Production");
-        $url = $this->generateApertureUrl($parameters);
+        $partial_url = $this->generateApertureUrl($parameters);
+        $url = $partial_url . "/stack";
         $curl_response = $this->performCurl($url);
         /** return response as an associative array */
-        $response = json_decode($curl_response['body_content'], true);
+        $response = json_decode($curl_response['    body_content'], true);
         /** find object with name=varnish  */
         error_log(print_r($curl_response,true));
         $image;
