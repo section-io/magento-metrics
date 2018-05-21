@@ -42,7 +42,7 @@ class UpdateVclCommand extends Command
         $this->aperture = $aperture;
         $this->state = $state;
         $this->pageCacheConfig = $pageCacheConfig;
-        $this->helper = $helper
+        $this->helper = $helper;
     }
 
     /**
