@@ -588,7 +588,7 @@ class Data extends AbstractHelper
         $url = $partial_url . "/stack";
         $curl_response = $this->performCurl($url);
         /** return response as an associative array */
-        $response = json_decode($curl_response['    body_content'], true);
+        $response = json_decode($curl_response['body_content'], true);
         /** find object with name=varnish  */
         error_log(print_r($curl_response,true));
         $image;
