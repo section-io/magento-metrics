@@ -23,21 +23,26 @@ class UpdateVclCommand extends Command
     protected $state;
     /** @var \Magento\PageCache\Model\Config\PageCache $pageCacheConfig */
     protected $pageCacheConfig;
+    /** @var \Sectionio\Metrics\Helper\Data $helper */
+    protected $helper;
 
     /**
      * @param \Sectionio\Metrics\Helper\Aperture $aperture
      * @param \Sectionio\Metrics\Helper\State $state
+     * @param \Sectionio\Metrics\Helper\Data $helper
      * @param \Magento\PageCache\Model\Config $pageCacheConfig
      */
     public function __construct(
         \Sectionio\Metrics\Helper\Aperture $aperture,
         \Sectionio\Metrics\Helper\State $state,
+        \Sectionio\Metrics\Helper\Data $helper,
         \Magento\PageCache\Model\Config $pageCacheConfig
     ) {
         parent::__construct();
         $this->aperture = $aperture;
         $this->state = $state;
         $this->pageCacheConfig = $pageCacheConfig;
+        $this->helper = $helper;
     }
 
     /**
@@ -60,6 +65,8 @@ class UpdateVclCommand extends Command
         $application_id = $this->state->getApplicationId();
         $environment_name = $this->state->getEnvironmentName();
         $proxy_name = $this->state->getProxyName();
+        /** @var string $proxy_image*/
+        $proxy_version = $this->helper->getProxyVersion($account_id, $application_id);
 
         if (!$account_id) {
             throw new \Exception('account_id has not been set, please run sectionio:setup');
@@ -77,8 +84,12 @@ class UpdateVclCommand extends Command
             throw new \Exception('proxy_name has not been set, please run sectionio:setup');
         }
 
-        /** Extract the generated Varnish 4 VCL code */
-        $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        $major_release = $this->helper->getMajorRelease($proxy_version);
+
+
+        /** Extract the generated VCL code appropriate for their version*/
+        $vcl = $this->helper->getCorrectVCL($this->pageCacheConfig, $major_release);
+
         $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, $proxy_name, $vcl, 'MagentoTurpentine');
 
         if ($result['http_code'] == 200) {
