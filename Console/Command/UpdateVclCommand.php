@@ -86,12 +86,9 @@ class UpdateVclCommand extends Command
 
         $major_release = $this->helper->getMajorRelease($proxy_version);
 
+
         /** Extract the generated VCL code appropriate for their version*/
-        if ($major_release == "4" ){
-            $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
-        } else {
-            $vcl = $this->pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
-        }
+        $vcl = $this->helper->getCorrectVCL($this->pageCacheConfig, $major_release);
 
         $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, $proxy_name, $vcl, 'MagentoTurpentine');
 

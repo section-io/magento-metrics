@@ -623,4 +623,20 @@ class Data extends AbstractHelper
     {
         return explode(".", $full_release)[0];
     }
+
+    /**
+     * Takes in the pageCacheConfig object and a major release and returns the correct vcl
+     * @param object $pageCacheConfig
+     * @param string $full_release
+     * 
+     * @return string
+     */
+    public function getCorrectVCL($pageCacheConfig, $majorRelease) 
+    {
+        if ($major_release == "4") {
+            return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        } else {
+            return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
+        }
+    }
 }
