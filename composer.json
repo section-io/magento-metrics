@@ -2,7 +2,7 @@
   "name": "sectionio/metrics",
   "description": "Retrieve site metrics for your Section.io account.",
   "type": "magento2-module",
-  "version": "101.4.1",
+  "version": "101.4.2",
   "license": [
     "OSL-3.0",
     "AFL-3.0"
