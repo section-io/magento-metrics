@@ -116,7 +116,18 @@ class SetupCommand extends Command
             throw new \InvalidArgumentException('Argument ' . self::APPLICATION_ID_ARGUMENT . ' must be your application id number.');
         }
 
-        $this->state->setAreaCode('adminhtml');
+        $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
+
+        // Attempt to set the AreaCode for the App State created by the ObjectManager
+        // In Magento Commerce 2.2.3 the \Magento\Framework\App\State object returned by the ObjectManager is a
+        // different instance to the one injected by DI
+        $appStateOm = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\App\State::class);
+        try {
+            $appStateOm->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
+        } catch (\Exception $e) {
+            //AreaCode is already set, move on
+        }
+
         $settingsFactory = $this->settingsFactory->create()->getCollection()->getFirstItem();
 
         // Load existing model if available

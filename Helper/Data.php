@@ -580,4 +580,63 @@ class Data extends AbstractHelper
             $applicationFactory->save();
         }
     }
+    
+    /**
+     * get complete proxy image version for a given environment from aperture.
+     *
+     * @param int $account_id
+     * @param int $application_id
+     *
+     * @return string
+     */
+    public function getProxyVersion($account_id, $application_id)
+    {
+        /**generateApertureUrl takes an associative array */
+        $parameters = array("accountId"=>$account_id, "applicationId"=>$application_id, "environmentName"=>"Production");
+
+        /** build the account url */
+        $partial_url = $this->generateApertureUrl($parameters);
+        $url = $partial_url . "/stack";
+
+        $curl_response = $this->performCurl($url);
+        /** return response as an associative array */
+        $response = json_decode($curl_response['body_content'], true);
+
+        /** find element with name=varnish, grab the image  */
+        $image;
+        foreach($response as $proxy){
+            if ($proxy['name'] == 'varnish') { 
+                $image = $proxy['image'];
+            }
+        }
+        /** returns only the version ie "5.2.1" */
+        return explode(":", $image)[1];
+    }
+    
+    /**
+     * Takes a full version like "5.2.1" and returns the major release (5)
+     * @param string $full_release
+     * 
+     * @return string
+     */
+    public function getMajorRelease($full_release)
+    {
+        return explode(".", $full_release)[0];
+    }
+
+    /**
+     * Takes in the pageCacheConfig object and a major release and returns the correct vcl
+     * @param object $pageCacheConfig
+     * @param string $full_release
+     * 
+     * @return string
+     */
+    public function getCorrectVCL($pageCacheConfig, $major_release) 
+    {
+        if ($major_release == "4") {
+            return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
+        } else {
+            return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
+        }
+    }
 }
