@@ -454,7 +454,7 @@ class Data extends AbstractHelper
             $model->setData('account_id', $account_id);
             $model->setData('application_id', $id);
             $model->setData('application_name', $application_name);
-            $model->setData('is_active', '0');
+            $model->setData('is_active', '1');
             // save application
             $model->save();
         }

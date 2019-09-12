@@ -105,18 +105,18 @@ class Tabs extends WidgetTabs
             ->getFirstItem()
             ->getData('id');
         // only show tab if default account_id and application_id exist
-        if ($account_id and $application_id) {
-            $this->addTab(
-                'report_edit_tabs_metrics',
-                [
-                    'label' => __('View Site Metrics'),
-                    'title' => __('View Site Metrics'),
-                    'content' => $this->getLayout()->createBlock(
-                        'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Metrics'
-                    )->toHtml()
-                ]
-            );
-        }
+        // if ($account_id and $application_id) {
+        //     $this->addTab(
+        //         'report_edit_tabs_metrics',
+        //         [
+        //             'label' => __('View Site Metrics'),
+        //             'title' => __('View Site Metrics'),
+        //             'content' => $this->getLayout()->createBlock(
+        //                 'Sectionio\Metrics\Block\Adminhtml\Report\Edit\Tab\Metrics'
+        //             )->toHtml()
+        //         ]
+        //     );
+        // }
 
         return parent::_beforeToHtml();
     }

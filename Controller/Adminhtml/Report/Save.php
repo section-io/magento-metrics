@@ -210,7 +210,7 @@ class Save extends Action
         /** Extract the generated VCL code appropriate for their version*/
         $vcl = $this->helper->getCorrectVCL($this->pageCacheConfig, $major_release);
 
-        $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'MagentoTurpentine');
+        $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, 'varnish', $vcl, 'Magento2');
 
         if ($result['http_code'] == 200) {
             $this->messageManager->addSuccess(__('You have successfully updated varnish configuration.'));
