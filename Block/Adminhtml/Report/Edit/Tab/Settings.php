@@ -220,7 +220,7 @@ class Settings extends Generic implements TabInterface
                     'vcl_lbl',
                     'note',
                     [
-                        'text' => $this->helper->getCopy('management:configure-application:vcl-explanation', 'Update Varnish Configuration with section.io. It will update and apply configuration in the <strong>Production branch</strong>.')
+                        'text' => $this->helper->getCopy('management:configure-application:vcl-explanation', 'Upload Varnish Configuration to section.io. <u><strong style="color:red;font-size:16px;">NOTE: This will overwrite your default.vcl!</strong></u> The changes will be shown in the git log, and are revertable, but your current default.vcl will be entirely overwritten. This is intended to be a step to set up your website. It will update and apply configuration in the <strong>Production branch</strong>.')
                     ]
                 );
                 $managementFieldset->addField(

@@ -90,7 +90,7 @@ class UpdateVclCommand extends Command
         /** Extract the generated VCL code appropriate for their version*/
         $vcl = $this->helper->getCorrectVCL($this->pageCacheConfig, $major_release);
 
-        $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, $proxy_name, $vcl, 'MagentoTurpentine');
+        $result = $this->aperture->updateProxyConfiguration($account_id, $application_id, $environment_name, $proxy_name, $vcl, 'Magento2');
 
         if ($result['http_code'] == 200) {
             $output->writeln('You have successfully updated varnish configuration.');
