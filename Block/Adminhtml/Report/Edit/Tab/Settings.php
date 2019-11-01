@@ -16,6 +16,8 @@ class Settings extends Generic implements TabInterface
     protected $accountFactory;
     /** @var \Sectionio\Metrics\Model\ApplicationFactory $applicationFactory */
     protected $applicationFactory;
+    /** @var \Magento\Framework\Module\Manager $moduleManager */
+    protected $moduleManager;
     // var \Sectionio\Metrics\Helper\Data $helper
     protected $helper;
     // var \Sectionio\Metrics\Helper\Status $state
@@ -50,6 +52,7 @@ class Settings extends Generic implements TabInterface
         \Sectionio\Metrics\Helper\State $state,
         \Magento\Backend\Model\UrlInterface $urlBuilder,
         \Magento\PageCache\Model\Config $pageCacheConfig,
+        \Magento\Framework\Module\Manager $moduleManager,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
@@ -61,6 +64,7 @@ class Settings extends Generic implements TabInterface
         $this->urlBuilder = $urlBuilder;
         $this->pageCacheConfig = $pageCacheConfig;
         $this->logger = $context->getLogger();
+        $this->moduleManager = $moduleManager;
         $this->setUseContainer(true);
     }
 
@@ -216,11 +220,12 @@ class Settings extends Generic implements TabInterface
                 );
 
                 //Varnish Configuration
+
                 $managementFieldset->addField(
                     'vcl_lbl',
                     'note',
                     [
-                        'text' => $this->helper->getCopy('management:configure-application:vcl-explanation', 'Upload Varnish Configuration to section.io. <u><strong style="color:red;font-size:16px;">NOTE: This will overwrite your default.vcl!</strong></u> The changes will be shown in the git log, and are revertable, but your current default.vcl will be entirely overwritten. This is intended to be a step to set up your website. It will update and apply configuration in the <strong>Production branch</strong>.')
+                        'text' => $this->helper->getCopy('management:configure-application:vcl-explanation', ($this->moduleManager->isEnabled('Magento_CacheInvalidate') ?  "Magento_CacheInvalidate is active. <b>Disable it unless you are also running a local instance of varnish.</b><pre>root@magento:/var/www/html# /bin/magento module:disable Magento_CacheInvalidate</pre>" : "Magento_CacheInvalidate is <b>not active</b>. Will only purge on Section, not local cache. (this is proper for most configurations)") . '<br><br>Upload Varnish Configuration to section.io. <u><strong style="color:red;font-size:16px;">NOTE: This will overwrite your default.vcl!</strong></u> The changes will be shown in the git log, and are revertable, but your current default.vcl will be entirely overwritten. This is intended to be a step to set up your website. It will update and apply configuration in the <strong>Production branch</strong>.')
                     ]
                 );
                 $managementFieldset->addField(
