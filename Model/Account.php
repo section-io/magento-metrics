@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Sectionio. All rights reserved.
+ * Copyright © 2018 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Sectionio\Metrics\Model;
@@ -22,7 +22,7 @@ class Account extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-    
+
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 

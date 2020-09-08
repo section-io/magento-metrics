@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Sectionio. All rights reserved.
+ * Copyright © 2018 Sectionio. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Sectionio\Metrics\Model\ResourceModel;
@@ -15,7 +15,7 @@ class Application extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         $resourcePrefix = null
     ) {
-    
+
         $this->transactionManager = $context->getTransactionManager();
         $this->_resources = $context->getResources();
         $this->objectRelationProcessor = $context->getObjectRelationProcessor();

@@ -23,11 +23,11 @@ class InvalidateVarnishObserver implements ObserverInterface
     private $purgeCache;
 
     /**
-     * @param \Magento\PageCache\Model\Config $config
+     * @param \Sectionio\Metrics\Model\Config $config
      * @param \Sectionio\Metrics\Model\PurgeCache $purgeCache
      */
     public function __construct(
-        \Magento\PageCache\Model\Config $config,
+        \Sectionio\Metrics\Model\Config $config,
         \Sectionio\Metrics\Model\PurgeCache $purgeCache
     ) {
         $this->config = $config;
@@ -43,7 +43,7 @@ class InvalidateVarnishObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($this->config->getType() == \Magento\PageCache\Model\Config::VARNISH && $this->config->isEnabled()) {
+        if ($this->config->getType() == \Sectionio\Metrics\Model\Config::VARNISH && $this->config->isEnabled()) {
             $object = $observer->getEvent()->getObject();
             if ($object instanceof \Magento\Framework\DataObject\IdentityInterface) {
                 $tags = [];

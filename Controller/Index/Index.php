@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Section.io. All rights reserved.
+ * Copyright © 2018 Section.io. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Sectionio\Metrics\Controller\Index;
