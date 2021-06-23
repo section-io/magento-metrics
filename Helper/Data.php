@@ -635,8 +635,10 @@ class Data extends AbstractHelper
     {
         if ($major_release == "4") {
             return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_4_CONFIGURATION_PATH);
-        } else {
+        } elseif ($major_release == "5") {
             return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_5_CONFIGURATION_PATH);
+        } else {
+            return $pageCacheConfig->getVclFile(\Magento\PageCache\Model\Config::VARNISH_6_CONFIGURATION_PATH);
         }
     }
 }
