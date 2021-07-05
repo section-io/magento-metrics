@@ -1,6 +1,6 @@
 {
   "name": "sectionio/metrics",
-  "description": "Improve website performance metrics for the $
+  "description": "Improve website performance metrics for the Section.io Magento environment.",
   "type": "magento2-module",
   "version": "104.0.5",
   "license": [
@@ -19,3 +19,4 @@
     }
   }
 }
+
