@@ -191,7 +191,7 @@ class Aperture extends AbstractHelper
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'section.io-Magento-2-Extension/103.0.5');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'section.io-Magento-2-Extension/104.0.5');
 
         if ($username = $settingsFactory->getData('user_name')) {
             $credentials = ($username . ':' . $this->encryptor->decrypt($settingsFactory->getData('password')));
